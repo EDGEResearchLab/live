@@ -39,6 +39,7 @@ app.on('event:newpoint', function(d) {
 
 // Pages
 app.use('/', live);
+app.use('/live', live);
 // API
 app.use('/api', api);
 // Socket Connections
