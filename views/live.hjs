@@ -1,10 +1,8 @@
 {{#yield-scripts}}
-<script type="text/javascript" src="static/stuff.js"></script>
-<script type="text/javascript" src="static/foo.js"></script>
 {{/yield-scripts}}
 
 {{#yield-css}}
-
+<link rel="stylesheet" href="stylesheets/style.css" />
 {{/yield-css}}
 
 

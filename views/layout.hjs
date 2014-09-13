@@ -2,6 +2,7 @@
 <html>
     <head>
         <title>TEST</title>
+        {{{yield-css}}}
         {{{yield-scripts}}}
     </head>
     <body>
