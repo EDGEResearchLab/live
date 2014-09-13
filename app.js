@@ -25,7 +25,6 @@ app.use(favicon(__dirname + '/public/images/favicon.ico'));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(cookieParser());
-app.use(require('less-middleware')(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(function(req, res, next) {
@@ -38,8 +37,8 @@ app.on('event:newpoint', function(d) {
 });
 
 // Pages
-app.use('/', live);
-app.use('/live', live);
+app.use('/', live.router);
+app.use('/live', live.router);
 // API
 app.use('/api', api);
 // Socket Connections
@@ -73,5 +72,4 @@ if (app.get('env') == 'development') {
 }
 
 app.listen(process.env.PORT || 3000);
-module.exports = app;
 
