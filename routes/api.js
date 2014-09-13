@@ -1,6 +1,9 @@
 var express = require('express');
 var router = express.Router();
 
+router.get('/report', function(req, res) {
+});
+
 router.get('/flights', function(req, res) {
     var flightTable = req.db.get('flights');
     
