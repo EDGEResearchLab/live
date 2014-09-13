@@ -26,8 +26,12 @@ app.use(require('less-middleware')(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(function(req, res, next) {
-    req.db = db;
+    //req.db = db;
     next();
+});
+
+app.on('event:newpoint', function(d) {
+    console.log('newpoint: ' + JSON.stringify(d));
 });
 
 // Pages
