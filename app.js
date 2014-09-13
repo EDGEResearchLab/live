@@ -7,7 +7,7 @@ var mongo = require('mongodb');
 var monk = require('monk');
 var path = require('path');
 
-var index = require('./routes/index');
+var live = require('./routes/live');
 var api = require('./routes/api');
 
 var db = monk('mongodb://edgerl:rosebud@kahana.mongohq.com:10082/edge-rl-test');
@@ -31,7 +31,7 @@ app.use(function(req, res, next) {
 });
 
 // Pages
-app.use('/', index);
+app.use('/', live);
 // API
 app.use('/api', api);
 // Socket Connections
