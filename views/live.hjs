@@ -1,25 +1,13 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>{{ title }}</title>
+{{#yield-scripts}}
+<script type="text/javascript" src="static/stuff.js"></script>
+<script type="text/javascript" src="static/foo.js"></script>
+{{/yield-scripts}}
 
-        <meta name="description" content="EDGE Research Lab's Live Tracking"/>
-        <meta name="keywords" content="EDGE Research Lab, Scientific Research, Live Tracking"/>
-        <meta name="author" content="Matt Rasband; David Hughes"/>
-        <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
-        <meta http-equiv="pragma" content="no-cache"/>
-        <meta http-equiv="expires" content="-1"/>
+{{#yield-css}}
 
-        <script src="{{path}}" type="text/javascript"></script>
+{{/yield-css}}
 
-        {{#css}}
-            <link rel="stylesheet" href="{{path}}"/>
-        {{/css}}
 
-        <link rel='stylesheet' href='/stylesheets/style.css' />
-    </head>
-    <body>
-        <h1>{{ title }}</h1>
-        <p>Welcome to {{ title }}</p>
-    </body>
-</html>
+{{#yield-body}}
+<h2>example</h2>
+{{/yield-body}}

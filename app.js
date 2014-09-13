@@ -17,6 +17,9 @@ app.http().io();
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hjs');
+app.set('layout', 'layout');
+app.enable('view cache');
+app.engine('hjs', require('hogan-express'));
 
 app.use(favicon(__dirname + '/public/images/favicon.ico'));
 app.use(logger('dev'));

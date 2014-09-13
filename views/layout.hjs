@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>TEST</title>
+        {{{yield-scripts}}}
+    </head>
+    <body>
+        <div id="mainContain">
+            <header>
+
+            </header>
+
+            <section id="main">
+                {{{yield-body}}}
+            </section>
+
+            <footer>
+
+            </footer>
+        </div>
+    </body>
+</html>
+
