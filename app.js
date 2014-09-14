@@ -4,16 +4,13 @@ var express = require('express');
 var favicon = require('serve-favicon');
 var http = require('http');
 var logger = require('morgan');
-var mongo = require('mongodb');
-var monk = require('monk');
+var db = require('./lib/db.js');
 var path = require('path');
 var socketio = require('socket.io');
 
 var live = require('./routes/live');
 var vor = require('./routes/vor');
 var api = require('./routes/api');
-
-var db = monk('mongodb://edgerl:rosebud@kahana.mongohq.com:10082/edge-rl-test');
 
 var app = express();
 
