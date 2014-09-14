@@ -14,7 +14,6 @@ $(document).ready(function() {
 });
 
 var initSocketIo = function() {
-    // Setup the websocket connection
     var socket = io.connect('http://localhost:3000/live');
     socket.on('connect', handleOnConnect);
     socket.on('disconnect', handleOnDisconnect);
@@ -48,13 +47,13 @@ var handleInitialPoints = function(initial_points) {
     logDebug("Loading initial points.");
 
     try {
-        var tracker_points = JSON.parse(initial_points);
+        var tracker_points = initial_points;
 
         // we get an array of trackables and their points
         // {"id" : "uuid", "points" : []}
         for (var i = 0; i < tracker_points.length; i++) {
             var thisTrackable = tracker_points[i];
-            var thisId = thisTrackable['id'];
+            var thisId = thisTrackable['edgeId'];
             var points = thisTrackable['points'];
 
             logDebug("New Trackable: " + thisId);
@@ -75,9 +74,9 @@ var handleInitialPoints = function(initial_points) {
 
 var handleNewPoint = function(point_content) {
     try {
-        logDebug("Received new point: " + point_content);
+        logDebug("Received new point: " + JSON.stringify(point_content));
         var thisTrackable = point_content;
-        var thisId = thisTrackable['id'];
+        var thisId = thisTrackable['edgeId'];
 
         if (!trackables[thisId]) {
             logDebug("New trackable: " + thisId);
