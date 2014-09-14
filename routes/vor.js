@@ -1,41 +1,47 @@
 var express = require('express');
 var router = express.Router();
 
+// Socket.IO namespace
 var namespace = null;
+// Cache the latest sent data
+var latestResult = {};
 
 router.get('/', function(req, res) {
-    res.locals = {title: 'EDGE Live'};
+    res.locals = {
+        title: 'EDGE Live'
+    };
     res.render('vor');
 });
 
+// We are assuming that we as the server are being responsible.
 function handleNewConnection(socket) {
-    // TODO
-    console.log('Vor New Client Connected');
+    if ('point' in latestResult 
+        && 'vors' in latestResult) {
+        socket.emit('point', latestResult);
+    }
 }
 
 function handleNewPoint(point) {
     try {
         console.log('Vor: Received new point: ' + JSON.stringify(point));
-        // find closest
-        // publish to ws
-        namespace.emit('point', point);
+        latestResult = {
+            point: point,
+            vors: findClosestVors(point.latitude, point.longitude, 2)
+        };
+        namespace.emit('point', latestResult);
     } catch (e) {
         console.error(e);
     }
 }
 
-function findClosesVors(latitude, longitude, count) {
-    //var promise = Promise.pending();
-
+function findClosestVors(latitude, longitude, count) {
     count = count || 2;
     
     //get all vors from the db
     //calculate relation to lat/lon
-    
-    //return promise.promise;
 }
 
-Gps.distanceTo = function(lat1, lon1, lat2, lon2) {
+var gpsDistanceTo = function(lat1, lon1, lat2, lon2) {
     var nmiRadius = 3443.89849; // radius in nautical miles
 
     var rads = [lat1, lon1, lat2, lon2].map(Math.radians);
@@ -47,7 +53,7 @@ Gps.distanceTo = function(lat1, lon1, lat2, lon2) {
     var dLon = rlon2 - rlon1;
     var dLat = rlat2 - rlat1;
 
-    var a = math.sin(dLat / 2)**2 + math.cos(rlat1) * math.cos(rlat2) * math.sin(dLon / 2)**2;
+    var a = math.pow(math.sin(dLat / 2), 2) + math.cos(rlat1) * math.cos(rlat2) * math.pow(math.sin(dLon / 2), 2);
     return 2 * nmiRadius * math.asin(math.sqrt(a));
 };
 

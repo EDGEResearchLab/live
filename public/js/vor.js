@@ -31,7 +31,6 @@ var initVorSocketIo = function() {
     var socket = io.connect('http://localhost:3000/vor');
     socket.on('connect', handleOnConnect);
     socket.on('disconnect', handleOnDisconnect);
-    socket.on('points', handleNewPoint);
     socket.on('point', handleNewPoint);
 };
 
@@ -94,8 +93,11 @@ var handleOnDisconnect = function() {
  */
 var handleNewPoint = function(point_content) {
     try {
-        console.log(JSON.stringify(point_content));
+        console.log('New Point: ' + JSON.stringify(point_content));
         updateStatusIcon(null, 'Last Update: ' + new Date());
+
+        
+
         var thisTrackable = point_content;
         var vors = thisTrackable['vors'];
         var thisId = thisTrackable['edgeId'];
