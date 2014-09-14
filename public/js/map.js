@@ -15,7 +15,6 @@ $(document).ready(function() {
 });
 
 var initMap = function(map_id, map_options) {
-    logDebug('Using map in #' + map_id + '.');
     var map_elem = $('#' + map_id).get(0);
     if (!map_elem) {
         console.error('Map Element not found.');
@@ -82,6 +81,5 @@ var generateRandomHexColor = function() {
     for (var i = 0; i < 6; i++) {
         color += chars[Math.floor(Math.random() * (chars.length))];
     }
-    logDebug('Generated random color ' + color);
     return color;
 };

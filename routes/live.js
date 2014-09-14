@@ -4,7 +4,6 @@ var router = express.Router();
 var namespace = null;
 
 router.get('/', function(req, res) {
-    console.log('app: ' + req.app);
     res.locals = {title: 'EDGE Live'};
     res.render('live');
 });
@@ -15,6 +14,7 @@ module.exports = {
         if (namespace === null) {
             namespace = io.of('/live');
             namespace.on('connection', function(sock) {
+                // TODO: Send all the current points for this flight
                 console.log('Live: Client Connected');
             });
         }

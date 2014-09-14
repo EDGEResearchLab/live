@@ -3,7 +3,8 @@ var router = express.Router();
 
 var namespace = null;
 
-router.get('/vor', function(req, res) {
+router.get('/', function(req, res) {
+    res.locals = {title: 'EDGE Live'};
     res.render('vor');
 });
 
@@ -24,8 +25,7 @@ module.exports = {
                 console.log('Vor: Received new point: ' + JSON.stringify(js));
                 // find closest
                 // publish to ws
-                var emittable = {message: "test"};
-                namespace.emit('update', emittable);
+                namespace.emit('point', js);
             } catch (e) {
                 console.error(e);
             }

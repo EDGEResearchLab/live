@@ -35,8 +35,8 @@ app.on('newpoint', function(d) {
 
 app.use('/', live.router);
 app.use('/live', live.router);
-// API
-app.use('/vor', live.router);
+app.use('/vor', vor.router);
+//app.use('/predict', predict.router);
 
 app.use('/api', api);
 
