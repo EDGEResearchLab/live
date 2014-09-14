@@ -22,13 +22,21 @@ function handleNewConnection(socket) {
 }
 
 function handleNewPoint(point) {
-    console.log('Vor: Received new point: ' + JSON.stringify(point));
     var latestResult = {
         point: point,
         vors: []
     };
     getVors(function(docs) {
-        // TODO - Run the numbers
+        for(var i = 0; i < docs.length; i++) {
+            docs[i]['distance'] = gpsDistanceTo(point.latitude, point.longitude, docs[i].latitude, docs[i].longitude);
+        }
+        docs.sort(function(a, b) {
+            if (a.distance < b.distance) return -1;
+            if (a.distance > b.distance) return 1;
+            return 0;
+        });
+        latestResult.vors.push(docs[0]);
+        latestResult.vors.push(docs[1]);
         namespace.emit('point', latestResult);
     });
 }
@@ -41,7 +49,7 @@ function getVors(callback) {
     };
     var proj = {
         _id: 0,
-        latiude: 1,
+        latitude: 1,
         longitude: 1,
         call: 1
     };
@@ -63,8 +71,8 @@ var gpsDistanceTo = function(lat1, lon1, lat2, lon2) {
     var dLon = rlon2 - rlon1;
     var dLat = rlat2 - rlat1;
 
-    var a = math.pow(math.sin(dLat / 2), 2) + math.cos(rlat1) * math.cos(rlat2) * math.pow(math.sin(dLon / 2), 2);
-    return 2 * nmiRadius * math.asin(math.sqrt(a));
+    var a = Math.pow(Math.sin(dLat / 2), 2) + Math.cos(rlat1) * Math.cos(rlat2) * Math.pow(Math.sin(dLon / 2), 2);
+    return 2 * nmiRadius * Math.asin(Math.sqrt(a));
 };
 
 // Converts from degrees to radians.

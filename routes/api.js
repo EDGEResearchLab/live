@@ -37,13 +37,13 @@ function reportPostHandler(req, res) {
  */
 function isValidJson(js) {
     var fields = {
-        'edgeId': /^[a-z0-9]+$/i, // digits, a-z only
-        'latitude': /^[-+]?\d{1,3}(?:\.\d+)?$/, // decimal degrees.
-        'longitude': /^[-+]?\d{1,3}(?:\.\d+)?$/, // decimal degrees.
-        'altitude': /^[0-9]+$/, // int only
-        'speed': /^[0-9]+(?:\.\d+)?$/, // int, or double
-        'time': /^[0-9]+$/, // int (seconds since epoch)
-        'source': /^[-_ .,:;0-9a-z]+$/i // Pretty much whatever.
+        edgeId: /^[a-z0-9]+$/i, // digits, a-z only
+        latitude: /^[-+]?\d{1,3}(?:\.\d+)?$/, // decimal degrees.
+        longitude: /^[-+]?\d{1,3}(?:\.\d+)?$/, // decimal degrees.
+        altitude: /^[0-9]+$/, // int only
+        speed: /^[0-9]+(?:\.\d+)?$/, // int, or double
+        time: /^[0-9]+$/, // int (seconds since epoch)
+        source: /^[-_ .,:;0-9a-z]+$/i // Pretty much whatever.
     };
 
     for (key in fields) {
