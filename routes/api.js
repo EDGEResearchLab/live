@@ -16,7 +16,7 @@ function reportPostHandler(req, res) {
     // TODO: Verify source.
     var js = req.body;
     if (validJson(js)) {
-        req.app.emit('event:newpoint', js);
+        req.app.emit('newpoint', js);
         res.status(200).send("success");
     } else {
         res.status(400).send("invalid json payload");

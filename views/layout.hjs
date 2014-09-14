@@ -1,7 +1,15 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>TEST</title>
+        <meta name="description" content="EDGE Research Lab's Live tracking site" />
+        <meta name="keywords" content="EDGE Research Lab, Scientific Research, Live Tracking" />
+        <meta name="author" content="Matt Rasband; David Hughes; Robert Long" />
+        <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+        <meta http-equiv="pragma" content="no-cache" />
+        <meta http-equiv="expires" content="-1" />
+
+        <title>{{ title }}</title>
+        <link rel="stylesheet" type="text/css" href="stylesheets/main.css">
         {{{yield-css}}}
         {{{yield-scripts}}}
     </head>
@@ -16,7 +24,21 @@
             </section>
 
             <footer>
-
+                 <div>
+                     &copy; 2014 | <a href="www.google.com">Disclaimer</a>
+                 </div>
+                 <div>
+                     <a href="http://www.youtube.com/user/EDGEResearchLab" target="_blank">
+                        <img class="socialIcons" src="images/socialYouTube.png" alt="EDGE on YouTube!"/>
+                    </a>
+                    <a href="http://www.twitter.com/EDGEResearchLab" target="_blank">
+                        <img class="socialIcons" src="images/socialTwitter.png" alt="EDGE on Twitter!"/>
+                    </a>
+                    <a href="http://www.github.com/EDGEResearchLab" target="_blank">
+                        <img class="socialIcons github" src="images/socialGithub.png" alt="EDGE on GitHub"/>
+                    </a>
+                </div>
+                <div style="clear: both;"></div>
             </footer>
         </div>
     </body>
