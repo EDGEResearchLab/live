@@ -12,6 +12,10 @@ var live = require('./routes/live');
 var vor = require('./routes/vor');
 var api = require('./routes/api');
 
+var config = require('./config');
+
+global.dbo = db.connection(config);
+
 var app = express();
 
 app.set('views', path.join(__dirname, 'views'));
@@ -25,10 +29,6 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
-app.on('newpoint', function(d) {
-    console.log('newpoint: ' + JSON.stringify(d));
-});
 
 app.use('/', live.router);
 app.use('/live', live.router);
