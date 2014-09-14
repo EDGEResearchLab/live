@@ -13,7 +13,7 @@ var live = require('./routes/live');
 var vor = require('./routes/vor');
 var api = require('./routes/api');
 
-//var db = monk('');
+var db = monk('mongodb://edgerl:rosebud@kahana.mongohq.com:10082/edge-rl-test');
 
 var app = express();
 
@@ -28,11 +28,6 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
-app.use(function(req, res, next) {
-    //req.db = db;
-    next();
-});
 
 app.on('newpoint', function(d) {
     console.log('newpoint: ' + JSON.stringify(d));
@@ -59,16 +54,6 @@ app.use(function(err, req, res, next) {
         error: {}
     });
 });
-
-//if (app.get('env') == 'development') {
-//    app.use(function(err, req, res, next) {
-//        res.status(err.status || 500);
-//        res.render('error', {
-//            message: err.message,
-//            error: err
-//        });
-//    });
-//}
 
 var server = http.createServer(app);
 var io = socketio.listen(server);
