@@ -19,15 +19,14 @@ function reportPostHandler(req, res) {
     if (isValidJson(js)) {
         verifyNewPoint(js, function(res) {
             if (!res) {
-                console.error('Duplicate point.');
+                console.error('Rejected duplicate point.');
             } else {
                 js['receiptTime'] = new Date().getTime();
                 req.app.emit('newpoint', js);
                 myDbo.saveTrack(js);
             }
         });
-        // This operation is async, so the user won't really know.
-        res.status(200).send("success");
+        res.status(202).send("accepted");
     } else {
         res.status(400).send("invalid json payload");
     }
@@ -66,7 +65,6 @@ function verifyNewPoint(js, onSuccessCb) {
 
     dbo.getTracks(query)
         .then(function(docs) {
-            console.log(docs);
             onSuccessCb(docs.length == 0);
         })
         .catch(console.err);
