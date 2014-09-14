@@ -10,6 +10,7 @@ var socketio = require('socket.io');
 
 var live = require('./routes/live');
 var vor = require('./routes/vor');
+var predict = require('./routes/predict');
 var mini = require('./routes/mini');
 var api = require('./routes/api');
 
@@ -21,7 +22,7 @@ var app = express();
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hjs');
-app.set('layout', 'layout');
+app.set('layout', 'layout'); // any rendered page will inherit
 app.enable('view cache');
 app.engine('hjs', require('hogan-express'));
 
@@ -31,13 +32,16 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', live.router);
 app.use('/live', live.router);
 app.use('/vor', vor.router);
-//app.use('/predict', predict.router);
+app.use('/predict', predict.router);
 app.use('/mini', mini.router);
 
 app.use('/api', api);
+// Anything not found will just be redirected to live.
+app.use('/', function(req, res, next) {
+    res.redirect('/live');
+});
 
 // Error Handlers
 app.use(function(req, res, next) {
