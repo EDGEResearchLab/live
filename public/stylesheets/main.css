@@ -12,12 +12,13 @@
 body {
     margin: 0;
     padding: 0;
-    background-color: black;
-    background-image: url(../images/edgeBackground.jpg);
-    background-repeat: no-repeat;
-    background-attachment: fixed;
+    /*background-color: black;*/
+    /*background-image: url(../images/edgeBackground.jpg);*/
+    background-image: url(../images/dark_wall.png);
+    /*background-repeat: repeat;*/
+    /*background-attachment: fixed;
     background-position: center bottom;
-    padding-bottom: 15px;
+    padding-bottom: 15px;*/
 }
 
 a, a:visited {
