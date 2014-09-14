@@ -10,6 +10,7 @@ var socketio = require('socket.io');
 
 var live = require('./routes/live');
 var vor = require('./routes/vor');
+var mini = require('./routes/mini');
 var api = require('./routes/api');
 
 var config = require('./config');
@@ -34,6 +35,7 @@ app.use('/', live.router);
 app.use('/live', live.router);
 app.use('/vor', vor.router);
 //app.use('/predict', predict.router);
+app.use('/mini', mini.router);
 
 app.use('/api', api);
 
