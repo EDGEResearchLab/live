@@ -22,23 +22,33 @@ function handleNewConnection(socket) {
 }
 
 function handleNewPoint(point) {
-    try {
-        console.log('Vor: Received new point: ' + JSON.stringify(point));
-        latestResult = {
-            point: point,
-            vors: findClosestVors(point.latitude, point.longitude, 2)
-        };
+    console.log('Vor: Received new point: ' + JSON.stringify(point));
+    var latestResult = {
+        point: point,
+        vors: []
+    };
+    getVors(function(docs) {
+        // TODO - Run the numbers
         namespace.emit('point', latestResult);
-    } catch (e) {
-        console.error(e);
-    }
+    });
 }
 
-function findClosestVors(latitude, longitude, count) {
-    count = count || 2;
-    
-    //get all vors from the db
-    //calculate relation to lat/lon
+function getVors(callback) {
+    var query = {
+        state: {
+            $in: ['CO', 'KS']
+        }
+    };
+    var proj = {
+        _id: 0,
+        latiude: 1,
+        longitude: 1,
+        call: 1
+    };
+
+    dbo.getVors(query, proj)
+        .then(callback)
+        .catch(console.err);
 }
 
 var gpsDistanceTo = function(lat1, lon1, lat2, lon2) {

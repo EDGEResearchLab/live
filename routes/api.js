@@ -15,9 +15,18 @@ router.all('/report', function(req, res) {
 function reportPostHandler(req, res) {
     // TODO: Verify source.
     var js = req.body;
-    if (validJson(js)) {
-        js['receiptTime'] = new Date().getTime(); // time since epoch
-        req.app.emit('newpoint', js);
+    var myDbo = dbo; // avoid name conflict in callback
+    if (isValidJson(js)) {
+        verifyNewPoint(js, function(res) {
+            if (!res) {
+                console.error('Duplicate point.');
+            } else {
+                js['receiptTime'] = new Date().getTime();
+                req.app.emit('newpoint', js);
+                myDbo.saveTrack(js);
+            }
+        });
+        // This operation is async, so the user won't really know.
         res.status(200).send("success");
     } else {
         res.status(400).send("invalid json payload");
@@ -27,7 +36,7 @@ function reportPostHandler(req, res) {
 /**
  * Check if the JSON payload is valid, as far as we know.
  */
-function validJson(js) {
+function isValidJson(js) {
     var fields = {
         'edgeId': /^[a-z0-9]+$/i, // digits, a-z only
         'latitude': /^[-+]?\d{1,3}(?:\.\d+)?$/, // decimal degrees.
@@ -45,6 +54,22 @@ function validJson(js) {
     }
 
     return true;
+}
+
+function verifyNewPoint(js, onSuccessCb) {
+    var query = {
+        edgeId: js.edgeId,
+        latitude: js.latitude,
+        longitude: js.longitude,
+        time: js.time
+    };
+
+    dbo.getTracks(query)
+        .then(function(docs) {
+            console.log(docs);
+            onSuccessCb(docs.length == 0);
+        })
+        .catch(console.err);
 }
 
 module.exports = router;
