@@ -1,11 +1,20 @@
 {{#yield-scripts}}
+<script type="text/javascript" src="js/map.js"></script>
+<script type="text/javascript" src="js/live.js"></script>
 {{/yield-scripts}}
 
-{{#yield-css}}
-<link rel="stylesheet" href="stylesheets/style.css" />
-{{/yield-css}}
-
-
 {{#yield-body}}
-<h2>example</h2>
+<div id="mainCenter">
+    <div id="map_container">
+        <div id="map_canvas"></div>
+    </div>
+    <div id="charts">
+        <div id="altSpeedChart" onclick=""></div>
+    </div>
+</div>
+<div id="mainRight">
+    <div id="infoGraphic">
+        <img src="images/altitudeinfographic.png" alt="Infographic" />
+    </div>
+</div>
 {{/yield-body}}

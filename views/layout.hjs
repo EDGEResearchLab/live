@@ -11,15 +11,28 @@
         <title>{{ title }}</title>
         <link rel="stylesheet" type="text/css" href="stylesheets/main.css">
         {{{yield-css}}}
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC7vrJH7vkDVOYp0mXB26VY7mSIR0qckhs&sensor=false&libraries=geometry"></script>
         {{{yield-scripts}}}
     </head>
     <body>
-        <div id="mainContain">
+        <section id="container">
             <header>
-
+                <a href="/">
+                    <img id="edgeLogo" src="images/edgeLogo-sm.png" alt="EDGE Research Lab" />
+                </a>
+                <div id="menu">
+                    <a href="/">Live</a> |
+                    <a href="/vor" target="_self">Vor</a> | 
+                    <a href="/predict" target="_self">Predict</a> | 
+                    <a href="http://www.edgeresearchlab.org">Edge</a> | 
+                    <img src="images/status_error.png" id="statusIcon" class="statusIcon" title="Not Connected" />
+                </div>
             </header>
 
-            <section id="main">
+            <section id="main_content">
                 {{{yield-body}}}
             </section>
 
@@ -40,7 +53,7 @@
                 </div>
                 <div style="clear: both;"></div>
             </footer>
-        </div>
+        </section>
     </body>
 </html>
 

@@ -21,15 +21,19 @@ module.exports = {
 
         app.on('newpoint', function(js) {
             try {
-                console.log('Live: Received new point: ' + JSON.stringify(js));
-                //strip down to min required for publish
+                var unwantedFields = ['source', 'id'];
+                // Strip out unnecessary fields for the client to work.
+                for (var i = 0; i < unwantedFields.length; i++) {
+                    var field = unwantedFields[i];
+                    if (field in js) {
+                        delete js[field];
+                    }
+                }
                 //publish to ws.
-                var emittable = {message: "live test"};
-                namespace.emit('update', emittable);
+                namespace.emit('point', js);
             } catch (e) {
                 console.error(e);
             }
         });
     }
 };
-

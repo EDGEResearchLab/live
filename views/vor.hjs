@@ -1,0 +1,11 @@
+{{#yield-scripts}}
+
+{{/yield-scripts}}
+
+{{#yield-body}}
+<div id="vor_center">
+    <div id="map_container">
+        <div id="map_canvas"></div>
+    </div>
+</div>
+{{/yield-body}}
