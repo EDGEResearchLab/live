@@ -1,0 +1,150 @@
+/* EDGE-RL Hosting of EDGE Research Lab's Live Flights */
+
+@import url(http://fonts.googleapis.com/css?family=Quattrocento+Sans:400,400italic);
+
+* { 
+    margin: 0;
+    padding: 0;
+    font-family: 'Quattrocento Sans', sans-serif;
+    font-size: 16px;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: black;
+    background-image: url(../img/edgeBackground.jpg);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center bottom;
+    padding-bottom: 15px;
+}
+
+a, a:visited {
+    text-decoration: none;
+    color: #006fda;
+}
+
+a:hover {
+    opacity: 0.55;
+}
+
+#container {
+    width: 1280px;
+    height: auto;
+    background-color: white;
+    color: black;
+    padding: 10px 15px;
+    margin: 5px auto;
+    box-shadow: 0 0 25px #222;
+}
+
+    header {
+        border-bottom: 1px solid black;
+        padding-bottom: 5px;
+        width: 100%;
+    }
+        #edgeLogo {
+            width: 250px;
+            height: auto;
+        }
+        #menu {
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: -10px;
+            text-align: right;
+        }
+        .statusIcon {
+            width: 12px;
+            height: 12px;
+        }
+
+    section#main_content {
+        width: 100%;
+        height: auto;
+        margin: 0 auto;
+        display: inline-block;
+        text-align: center;
+        padding: 10px 0;
+    }
+
+        #mainLeft {
+            width: 300px;
+            height: 641px;
+            margin-right: 11px;
+            display: inline-block;
+            overflow: hidden;
+        }
+
+        #twitterFeed {
+            height: 100%;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        #mainCenter {
+          width: 940px;
+          height: 641px;
+          display: inline-block;
+        }
+
+        #map_canvas {
+            width: 100%;
+            height: 480px;
+            margin: 0 auto;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 2px 2px 12px #2d2d2d;
+        }
+
+        #charts {
+            width: 100%;
+            margin: 0 auto;
+            display: inline;
+            overflow: hidden;
+        }
+
+        #altSpeedChart {
+            width: 100%;
+            height: 150px;
+            margin: 11px auto 0 auto;
+            overflow: hidden;
+        }
+
+        #mainRight {
+            width: 300px;
+            height: 641px;
+            display: inline-block;
+            margin-left: 11px;
+        }
+
+    footer {
+        border-top: 1px solid black;
+        margin: 0 auto;
+        text-align: center;
+        padding-top: 10px;
+        width: 100%;
+        display: inline-block;
+    }
+
+        .socialIcons {
+            width: 32px;
+            height: 32px;
+            float: right;
+        }
+
+        .github {
+            width: 26px;
+            height: 26px;
+            float: right;
+            margin-top: 2px;
+        }
+
+/*
+    VOR Specifics
+*/
+#vor_center {
+    width: 75%;
+    margin: 0 auto;
+}
