@@ -85,18 +85,21 @@ a:hover {
         }
 
         #mainCenter {
-          width: 940px;
-          height: 641px;
-          display: inline-block;
+            width: 940px;
+            height: 641px;
+            float: left;
+            width: 72%;
+            display: inline-block;
+            margin-left: 20px;
         }
 
         #map_canvas {
             width: 100%;
-            height: 480px;
+            height: 640px;
             margin: 0 auto;
             overflow: hidden;
             position: relative;
-            box-shadow: 2px 2px 12px #2d2d2d;
+            box-shadow: 2px 2px 12px #999;
         }
 
         #charts {
@@ -116,8 +119,10 @@ a:hover {
         #mainRight {
             width: 300px;
             height: 641px;
+            float: right;
+            width: 24%;
             display: inline-block;
-            margin-left: 11px;
+            margin-right: 20px;
         }
 
     footer {
