@@ -14,7 +14,12 @@ $(document).ready(function() {
 });
 
 var initSocketIo = function() {
-    var socket = io.connect('http://localhost:3000/live');
+    var url = document.URL;
+    if (!(/\/live$/.test(url))) {
+        url += 'live';
+    }
+    console.log('Web Socket URL: ' + url);
+    var socket = io.connect(url);
     socket.on('connect', handleOnConnect);
     socket.on('disconnect', handleOnDisconnect);
     socket.on('points', handleInitialPoints);

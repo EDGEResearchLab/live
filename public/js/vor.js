@@ -28,7 +28,12 @@ $(document).ready(function() {
 
 var initVorSocketIo = function() {
     // Setup the websocket connection
-    var socket = io.connect('http://localhost:3000/vor');
+    var url = document.URL;
+    if (!(/\/vor$/.test(url))) {
+        url += 'vor';
+    }
+    console.log('Web Socket URL: ' + url);
+    var socket = io.connect(url);
     socket.on('connect', handleOnConnect);
     socket.on('disconnect', handleOnDisconnect);
     socket.on('point', handleNewPoint);
