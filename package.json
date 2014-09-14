@@ -12,7 +12,6 @@
     "debug": "~1.0.4",
     "events": "^1.0.2",
     "express": "^4.8.8",
-    "express.io": "^1.1.13",
     "hogan-express": "^0.5.2",
     "mongodb": "^1.4.9",
     "monk": "^0.9.0",
