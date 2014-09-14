@@ -16,7 +16,7 @@ var api = require('./routes/api');
 
 var config = require('./config');
 
-global.dbo = db.connection(config);
+global.dbo = new db.connection(config);
 
 var app = express();
 
