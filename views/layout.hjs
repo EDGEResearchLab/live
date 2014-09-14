@@ -37,11 +37,9 @@
             </section>
 
             <footer>
-                 <div>
-                     &copy; 2014 <!--| <a href="www.google.com">Disclaimer</a>-->
-                 </div>
-                 <div>
-                     <a href="http://www.youtube.com/user/EDGEResearchLab" target="_blank">
+                <div>
+                    <div class="copyright">&copy; 2014</div><!--| <a href="www.google.com">Disclaimer</a>-->
+                    <a href="http://www.youtube.com/user/EDGEResearchLab" target="_blank">
                         <img class="socialIcons" src="images/socialYouTube.png" alt="EDGE on YouTube!"/>
                     </a>
                     <a href="http://www.twitter.com/EDGEResearchLab" target="_blank">
