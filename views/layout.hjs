@@ -9,6 +9,7 @@
         <meta http-equiv="expires" content="-1" />
 
         <title>{{ title }}</title>
+        <link rel="shortcut icon" href="images/favicon.ico?v=2" />
         <link rel="stylesheet" type="text/css" href="stylesheets/main.css">
         {{{yield-css}}}
 
@@ -40,13 +41,13 @@
                 <div>
                     <div class="copyright">&copy; 2014</div><!--| <a href="www.google.com">Disclaimer</a>-->
                     <a href="http://www.youtube.com/user/EDGEResearchLab" target="_blank">
-                        <img class="socialIcons" src="images/socialYouTube.png" alt="EDGE on YouTube!"/>
+                        <img class="socialIcons" src="images/socialYouTube.png" alt="EDGE on YouTube!" title="YouTube"/>
                     </a>
                     <a href="http://www.twitter.com/EDGEResearchLab" target="_blank">
-                        <img class="socialIcons" src="images/socialTwitter.png" alt="EDGE on Twitter!"/>
+                        <img class="socialIcons" src="images/socialTwitter.png" alt="EDGE on Twitter!" title="Twitter"/>
                     </a>
                     <a href="http://www.github.com/EDGEResearchLab" target="_blank">
-                        <img class="socialIcons github" src="images/socialGithub.png" alt="EDGE on GitHub"/>
+                        <img class="socialIcons github" src="images/socialGithub.png" alt="EDGE on GitHub" title="GitHub"/>
                     </a>
                 </div>
                 <div style="clear: both;"></div>
