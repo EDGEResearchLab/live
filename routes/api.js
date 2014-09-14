@@ -16,6 +16,7 @@ function reportPostHandler(req, res) {
     // TODO: Verify source.
     var js = req.body;
     if (validJson(js)) {
+        js['receiptTime'] = new Date().getTime(); // time since epoch
         req.app.emit('newpoint', js);
         res.status(200).send("success");
     } else {
@@ -29,8 +30,8 @@ function reportPostHandler(req, res) {
 function validJson(js) {
     var fields = {
         'edgeId': /^[a-z0-9]+$/i, // digits, a-z only
-        'latitude': /^[-+]?\d{1,3}\.\d+$/, // decimal degrees.
-        'longitude': /^[-+]?\d{1,3}\.\d+$/, // decimal degrees.
+        'latitude': /^[-+]?\d{1,3}(?:\.\d+)?$/, // decimal degrees.
+        'longitude': /^[-+]?\d{1,3}(?:\.\d+)?$/, // decimal degrees.
         'altitude': /^[0-9]+$/, // int only
         'speed': /^[0-9]+(?:\.\d+)?$/, // int, or double
         'time': /^[0-9]+$/, // int (seconds since epoch)
