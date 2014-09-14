@@ -38,7 +38,7 @@
 
             <footer>
                  <div>
-                     &copy; 2014 | <a href="www.google.com">Disclaimer</a>
+                     &copy; 2014 <!--| <a href="www.google.com">Disclaimer</a>-->
                  </div>
                  <div>
                      <a href="http://www.youtube.com/user/EDGEResearchLab" target="_blank">

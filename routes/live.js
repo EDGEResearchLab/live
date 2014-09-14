@@ -14,8 +14,38 @@ module.exports = {
         if (namespace === null) {
             namespace = io.of('/live');
             namespace.on('connection', function(sock) {
+                var myDbo = dbo;
                 // TODO: Send all the current points for this flight
-                console.log('Live: Client Connected');
+                myDbo.getFlights()
+                    .then(function(docs) {
+                        docs.sort(function(a, b) {
+                            if (a.begin < b.begin) return -1;
+                            if (a.begin > b.begin) return 1;
+                            return 0;
+                        });
+                        if (docs.length == 0) {
+                            console.error('No flights found.');
+                            return;
+                        }
+                        var thisFlight = docs[docs.length - 1];
+                        var query = {
+                            time: {
+                                $gt: thisFlight.begin
+                            }
+                        };
+                        var proj = {
+                            _id: 0,
+                            edgeId: 1,
+                            latitude: 1,
+                            longitude: 1,
+                            altitude: 1,
+                            speed: 1
+                        };
+                        myDbo.getTracks(query, proj)
+                            .then(function(docs) {
+                                sock.emit('points', docs);
+                            });
+                    });
             });
         }
 
