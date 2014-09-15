@@ -32,20 +32,18 @@ var dayUtcToEpoch = function(day, utc) {
 
 var satcomPostHandler = function(req) {
     try {
-        console.log('Received Satcom: ' + req);
-
-        var js = req.body;
-        var buff = new Buffer(js.data, 'hex');
+        var buff = new Buffer(req.body.data, 'hex');
         // Hex, Little Endian
         var vars = binary.parse(buff)
-            .word32ls('lat') // /1000000
-            .word32ls('lon') // /1000000
-            .word32ls('alt') // /100
-            .word16lu('spd') // >>16 /100
-            .word16lu('dir') // &0xffff /100
-            .word32lu('day') // if len < 5, pad with 0
-            .word32lu('utc') // if len < 5, pad with 0
-            //.word32lu('age') // We don't care about these.
+            .word32ls('lat')
+            .word32ls('lon')
+            .word32ls('alt')
+            .word16lu('spd')
+            .word16lu('dir')
+            .word32lu('day')
+            .word32lu('utc')
+            // We don't really care about these on the server.
+            //.word32lu('age')
             //.word16lu('hdr')
             .vars;
 
@@ -60,39 +58,44 @@ var satcomPostHandler = function(req) {
             source: 'satcom'
         };
 
-        if (isValidJson(dataPoint)) {
-            console.log('Satcom: ' + JSON.stringify(dataPoint));
-            req.app.emit('newpoint', dataPoint);
-        }
+        newPointCheckAndEmit(dataPoint, req);
     } catch (e) {
         console.log('Error receiving from satcom: ' + e);
     }
 }
 
-function reportPostHandler(req, res) {
+var reportPostHandler = function(req, res) {
     // TODO: Verify source.
-    var js = req.body;
-    var myDbo = dbo; // avoid name conflict in callback
-    if (isValidJson(js)) {
-        verifyNewPoint(js, function(res) {
+    if (newPointCheckAndEmit(req.body, req)) {
+        res.status(202).send('Accepted');
+    } else {
+        res.status(400).send('invalid json payload');
+    }
+};
+
+var newPointCheckAndEmit = function(newpoint, req) {
+    var myDbo = dbo;
+    if (isValidJson(newpoint)) {
+        console.log('New Point: ' + JSON.stringify(newpoint));
+        verifyNewPoint(newpoint, function(res) {
             if (!res) {
-                console.error('Rejected duplicate point.');
+                console.log('Rejected Duplicate Point.');
             } else {
-                js['receiptTime'] = new Date().getTime();
-                req.app.emit('newpoint', js);
-                myDbo.saveTrack(js);
+                newpoint['receiptTime'] = new Date().getTime();
+                req.app.emit('newpoint', newpoint);
+                myDbo.saveTrack(newpoint);
             }
         });
-        res.status(202).send("accepted");
+        return true;
     } else {
-        res.status(400).send("invalid json payload");
+        return false;
     }
-}
+};
 
 /**
  * Check if the JSON payload is valid, as far as we know.
  */
-function isValidJson(js) {
+var isValidJson = function(js) {
     var fields = {
         edgeId: /^[a-z0-9]+$/i, // digits, a-z only
         latitude: /^[-+]?\d{1,3}(?:\.\d+)?$/, // decimal degrees.
@@ -111,9 +114,10 @@ function isValidJson(js) {
     }
 
     return true;
-}
+};
 
-function verifyNewPoint(js, onSuccessCb) {
+var verifyNewPoint = function(js, onSuccessCb) {
+    // Fields used to check for a duplicate.
     var query = {
         edgeId: js.edgeId,
         latitude: js.latitude,
@@ -126,6 +130,6 @@ function verifyNewPoint(js, onSuccessCb) {
             onSuccessCb(docs.length == 0);
         })
         .catch(console.err);
-}
+};
 
 module.exports = router;
