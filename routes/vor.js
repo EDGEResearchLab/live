@@ -15,8 +15,7 @@ router.get('/', function(req, res) {
 
 // We are assuming that we as the server are being responsible.
 function handleNewConnection(socket) {
-    if ('point' in latestResult 
-        && 'vors' in latestResult) {
+    if ('point' in latestResult && 'vors' in latestResult) {
         socket.emit('point', latestResult);
     }
 }

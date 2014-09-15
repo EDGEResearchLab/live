@@ -6,7 +6,7 @@ var namespace = null;
 router.get('/', function(req, res) {
     res.locals = {
         title: 'EDGE Live'
-    }
+    };
     res.render('predict');
 });
 

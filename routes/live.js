@@ -23,7 +23,7 @@ module.exports = {
                             if (a.begin > b.begin) return 1;
                             return 0;
                         });
-                        if (docs.length == 0) {
+                        if (docs.length === 0) {
                             console.error('No flights found.');
                             return;
                         }

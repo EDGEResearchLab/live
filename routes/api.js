@@ -62,7 +62,7 @@ var satcomPostHandler = function(req) {
     } catch (e) {
         console.log('Error receiving from satcom: ' + e);
     }
-}
+};
 
 var reportPostHandler = function(req, res) {
     // TODO: Verify source.
@@ -106,7 +106,7 @@ var isValidJson = function(js) {
         source: /^[-_ .,:;0-9a-z]+$/i // Pretty much whatever.
     };
 
-    for (key in fields) {
+    for (var key in fields) {
         if (!(key in js) || !fields[key].test(js[key])) {
             console.log('Invalid Edge JSON: ' + JSON.stringify(js));
             return false;
@@ -127,7 +127,7 @@ var verifyNewPoint = function(js, onSuccessCb) {
 
     dbo.getTracks(query)
         .then(function(docs) {
-            onSuccessCb(docs.length == 0);
+            onSuccessCb(docs.length === 0);
         })
         .catch(console.err);
 };
