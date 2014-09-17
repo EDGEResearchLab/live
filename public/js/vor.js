@@ -99,7 +99,6 @@ var handleOnDisconnect = function() {
  */
 var handleNewPoint = function(trackable) {
     try {
-        console.log('New Point: ' + JSON.stringify(trackable));
         updateStatusIcon(null, 'Last Update: ' + new Date());
 
         var vors = trackable['vors'];
@@ -112,7 +111,7 @@ var handleNewPoint = function(trackable) {
             addNewUiDisplay(id, trackables[id].colorKey);
         }
 
-        console.debug("Update for " + id);
+        console.debug("Update for: " + id);
         trackables[id].update(point, vors);//todo this method
         updateUi(id, point, vors); // todo
     } catch (e) {
@@ -211,8 +210,6 @@ function VorTrackable(name, gmap, polyOpts) {
 
 VorTrackable.prototype.update = function(point, vors) {
     this.clear();
-    console.debug('[' + this.name + '] Point: ' + JSON.stringify(point));
-    console.debug('[' + this.name + '] Vors: ' + JSON.stringify(vors));
 
     var points = [
         vors[0],

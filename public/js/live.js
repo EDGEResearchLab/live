@@ -3,12 +3,6 @@ var trackables = {}; // hash for identifier/poly for client updates
 var hasReceivedPoints = false;
 var debug = true;
 
-var logDebug = function(msg) {
-    if (debug) {
-        console.debug(msg);
-    }
-};
-
 $(document).ready(function() {
     initSocketIo();
 });
@@ -68,16 +62,16 @@ var handleInitialPoints = function(initial_points) {
 
 var handleNewPoint = function(point_content) {
     try {
-        updateStatusIcon(null, 'Last Update: ' + new Date());
-        logDebug("Received new point: " + JSON.stringify(point_content));
         var thisTrackable = point_content;
         var thisId = thisTrackable['edgeId'];
 
         if (!trackables[thisId]) {
-            logDebug("New trackable: " + thisId);
+            console.debug('[' + thisId + '] New Trackable');
             trackables[thisId] = new Trackable(map, getDefaultPolyOpts());
         }
 
+        console.debug('[' + thisId + '] Update');
+        updateStatusIcon(null, 'Last Update: ' + new Date());
         trackables[thisId].addPoint(thisTrackable.latitude, thisTrackable.longitude);
     } catch (e) {
         console.error(e);
