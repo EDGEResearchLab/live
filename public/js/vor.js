@@ -23,6 +23,7 @@
 var trackables = {}; // hash for identifier/poly for client updates
 
 $(document).ready(function() {
+    map.setZoom(8); // The VOR page is mostly for an overview.
     initVorSocketIo();
 });
 
@@ -93,31 +94,59 @@ var handleOnDisconnect = function() {
  * Handle receipt of a new point.
  *
  * @param point_content - Data point from the server. Should take
- * the form {'vors': [], 'point': {}, 'edge_id': ''}
+ * the form {'vors': [], 'point': {}}
  * @return void
  */
-var handleNewPoint = function(point_content) {
+var handleNewPoint = function(trackable) {
     try {
-        console.log('New Point: ' + JSON.stringify(point_content));
+        console.log('New Point: ' + JSON.stringify(trackable));
         updateStatusIcon(null, 'Last Update: ' + new Date());
 
-        
+        var vors = trackable['vors'];
+        var point = trackable['point'];
+        var id = point['edgeId'];
 
-        var thisTrackable = point_content;
-        var vors = thisTrackable['vors'];
-        var thisId = thisTrackable['edgeId'];
-
-        if (!trackables[thisId]) {
-            console.debug("New Trackable: " + thisId);
-            trackables[thisId] = new VorTrackable(map, getDefaultPolyOpts());
+        if (!trackables[id]) {
+            console.debug("New Trackable: " + id);
+            trackables[id] = new VorTrackable(id, map, getDefaultPolyOpts());
+            addNewUiDisplay(id, trackables[id].colorKey);
         }
 
-        console.debug("Update for " + thisId);
-        // TODO - plot it
-        // updateUi(point_content);
+        console.debug("Update for " + id);
+        trackables[id].update(point, vors);//todo this method
+        updateUi(id, point, vors); // todo
     } catch (e) {
         console.error(e);
     }
+};
+
+var addNewUiDisplay = function(id, color) {
+    var newUiFeature = [
+        '<div id="' + id + '" class="vorInfoPane">',
+            '<span class="title" style="color: ' + (color || '#000') + ';">',
+                '<h4>' + id + '</h4>',
+            '</span>',
+            '<span class="row">',
+                '<span class="latlonalt"></span>',
+            '</span>',
+            '<span class="row">',
+                '<label>Call:</label>',
+                '<input type="text" class="vor summary" placeholder="vor" readonly/>',
+                '<input type="text" class="vor summary" placeholder="vor" readonly/><br/>',
+            '</span>',
+            '<span class="row">',
+                '<label>Bearing:</label>',
+                '<input type="text" class="bearing summary" placeholder="bearing" readonly/>',
+                '<input type="text" class="bearing summary" placeholder="bearing" readonly/><br/>',
+            '</span>',
+            '<span class="row">',
+                '<label>Distance (nmi):</label>',
+                '<input type="text" class="distance summary" placeholder="distance" readonly/>',
+                '<input type="text" class="distance summary" placeholder="distance" readonly/><br/>',
+            '</span>',
+        '</div>'
+    ];
+    $('#vorInfo').append(newUiFeature.join(''));
 };
 
 /**
@@ -126,9 +155,33 @@ var handleNewPoint = function(point_content) {
  * @parse point_content - Data point from the server with data to display.
  * @return void
  */
-var updateUi = function(point_content) {
-    var vor1 = $('#vor1_info');
-    var vor2 = $('#vor2_info');
+var updateUi = function(id, point, vors) {
+    var infoPane = $('#' + id);
+
+    // This looks a little backwards, but first is grabbing the
+    // furthest to the right, and we want it ordered.
+    var vorUi = infoPane.find('.vor');
+    vorUi.first().val(vors[1].call);
+    vorUi.last().val(vors[0].call);
+
+    var bearing = infoPane.find('.bearing');
+    bearing.first().val(parseFloat(vors[1].bearing).toFixed(2));
+    bearing.last().val(parseFloat(vors[0].bearing).toFixed(2));
+
+    var distance = infoPane.find('.distance');
+    distance.first().val(parseFloat(vors[1].distance).toFixed(2));
+    distance.last().val(parseFloat(vors[0].distance).toFixed(2));
+
+    var balloon = infoPane.find('.latlonalt').first();
+    var balloonDisplay = '';
+    balloonDisplay += parseFloat(point.latitude).toFixed(2).toString();
+    balloonDisplay += ', ';
+    balloonDisplay += parseFloat(point.longitude).toFixed(2).toString();
+    if ('altitude' in point) {
+        balloonDisplay += ' @ ';
+        balloonDisplay += parseFloat(point.altitude).toFixed(2).toString();
+    }
+    balloon.html(balloonDisplay);
 }
 
 /**
@@ -138,8 +191,10 @@ var updateUi = function(point_content) {
  * @param polyOpts - Options defining how the poly looks.
  * @return void
  */
-function VorTrackable(gmap, polyOpts) {
+function VorTrackable(name, gmap, polyOpts) {
+    this.name = name;
     this.gmap = gmap;
+    this.colorKey = polyOpts.strokeColor;
     this.markers = [];
 
     // The poly lines match for the trackable, they
@@ -154,14 +209,30 @@ function VorTrackable(gmap, polyOpts) {
     }
 }
 
+VorTrackable.prototype.update = function(point, vors) {
+    this.clear();
+    console.debug('[' + this.name + '] Point: ' + JSON.stringify(point));
+    console.debug('[' + this.name + '] Vors: ' + JSON.stringify(vors));
+
+    var points = [
+        vors[0],
+        point,
+        vors[1]
+    ];
+
+    for (var i = 0; i < points.length; i++) {
+        this.addPoint(points[i].latitude, points[i].longitude);
+    }
+
+    // TODO: display a marker on the balloon.
+};
+
 /**
  * Clear the poly ling from the map.
  * 
  * @return void
  */
 VorTrackable.prototype.clear = function() {
-    // Remove all points from the polies.
-    console.log(this.polies);
     for (var i = 0; i < this.polies.length; i++) {
         var path = this.polies[i].getPath();
         path.clear();
@@ -187,15 +258,6 @@ VorTrackable.prototype.addPoint = function(latitude, longitude) {
         var path = this.polies[i].getPath();
         path.push(latLng);
     }
-};
-
-/**
- * Clear the path of the poly.
- *
- * @return void
- */
-VorTrackable.prototype.clearPath = function() {
-    this.poly.getPath().clear();
 };
 
 /**

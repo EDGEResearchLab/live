@@ -4,9 +4,12 @@
 {{/yield-scripts}}
 
 {{#yield-body}}
-<div id="vor_center">
+<div id="mainCenter">
     <div id="map_container">
         <div id="map_canvas"></div>
     </div>
+</div>
+<div id="mainRight">
+    <div id="vorInfo"></div> 
 </div>
 {{/yield-body}}

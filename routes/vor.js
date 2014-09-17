@@ -35,8 +35,14 @@ function handleNewPoint(point) {
             if (a.distance > b.distance) return 1;
             return 0;
         });
-        latestResult.vors.push(docs[0]);
-        latestResult.vors.push(docs[1]);
+
+        for (var i = 0; i < 2; i++) {
+            docs[i]['bearing'] = gps.bearing(docs[i].latitude, docs[i].longitude, point.latitude, point.longitude);
+            latestResult.vors.push(docs[i]);
+        }
+
+        //latestResult.vors.push(docs[0]);
+        //latestResult.vors.push(docs[1]);
         namespace.emit('point', latestResult);
     });
 }
@@ -70,5 +76,6 @@ module.exports = {
 
         // Initialize the newpoint event listener.
         app.on('newpoint', handleNewPoint);
+        app.on('testpoint', handleNewPoint);
     }
 };

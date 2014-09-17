@@ -119,6 +119,34 @@ a:hover {
             margin-right: 20px;
         }
 
+        #vorInfo {
+            text-align: left;
+        }
+            .vorInfoPane {
+                margin-bottom: 10px;
+                display: inline-block;
+            }
+            span.latlonalt {
+                width: 100%;
+                text-align: center;
+                display: inline-block;
+            }
+            span.title {
+                width: 100%;
+                text-align: center;
+                border-bottom: solid 1px #000;
+                display: inline-block;
+                margin-bottom: 10px;
+            }
+            span.row {
+                width: 100%;
+                display: inline-block;
+            }
+            input.summary {
+                float: right;
+                width: 85px;
+            }
+
     footer {
         border-top: 1px solid black;
     }
