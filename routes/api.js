@@ -3,17 +3,24 @@ var moment = require('moment');
 var express = require('express');
 var router = express.Router();
 
-router.all('/report', function(req, res) {
-    switch (req.method) {
-        case 'POST':
-            reportPostHandler(req, res);
-            break;
-        default:
-            res.status(405).send("Method not allowed");
-            break;
-    }
-});
+//router.all('/report', function(req, res) {
+//    switch (req.method) {
+//        case 'POST':
+//            reportPostHandler(req, res);
+//            break;
+//        default:
+//            res.status(405).send("Method not allowed");
+//            break;
+//    }
+//});
 
+// Used for dev/debug - Not for publishing
+//router.post('/vor', function(req, res) {
+//    req.app.emit('testpoint', req.body);
+//    res.status(200).send("nice.");
+//});
+
+// TODO - Whitelist DBO
 router.post('/satcom', function(req, res) {
     satcomPostHandler(req);
     // **Always** give a 200, otherwise we back-up
@@ -24,8 +31,12 @@ router.post('/satcom', function(req, res) {
 var dayUtcToEpoch = function(day, utc) {
     day = day.toString();
     utc = utc.toString();                                                                            
-    if (day.length < 6) day = '0' + day;
-    if (utc.length < 8) utc = '0' + utc;
+    if (day.length < 6) {
+        day = '0' + day;
+    }
+    if (utc.length < 8) {
+        utc = '0' + utc;
+    }
     utc = utc.substr(0, utc.length - 2);
     return moment(day + '' + utc, 'MMDDYYHHmmss') / 1000; // utc, epoch
 };
@@ -48,7 +59,7 @@ var satcomPostHandler = function(req) {
             .vars;
 
         var dataPoint = {
-            edgeId: ('imei' in js) ? js.imei :  "",
+            edgeId: ('imei' in req.body) ? req.body.imei :  "",
             latitude: vars.lat / 1000000,
             longitude: vars.lon / 1000000,
             altitude: vars.alt / 100,
@@ -65,7 +76,6 @@ var satcomPostHandler = function(req) {
 };
 
 var reportPostHandler = function(req, res) {
-    // TODO: Verify source.
     if (newPointCheckAndEmit(req.body, req)) {
         res.status(202).send('Accepted');
     } else {
@@ -132,4 +142,7 @@ var verifyNewPoint = function(js, onSuccessCb) {
         .catch(console.err);
 };
 
-module.exports = router;
+module.exports = {
+    router: router
+};
+

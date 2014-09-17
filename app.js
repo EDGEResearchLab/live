@@ -4,9 +4,10 @@ var express = require('express');
 var favicon = require('serve-favicon');
 var http = require('http');
 var logger = require('morgan');
-var db = require('./lib/db.js');
 var path = require('path');
 var socketio = require('socket.io');
+
+var db = require('./lib/db.js');
 
 var live = require('./routes/live');
 var vor = require('./routes/vor');
@@ -37,7 +38,8 @@ app.use('/vor', vor.router);
 app.use('/predict', predict.router);
 app.use('/mini', mini.router);
 
-app.use('/api', api);
+app.use('/api', api.router);
+
 // Anything not found will just be redirected to live.
 app.use('/', function(req, res, next) {
     res.redirect('/live');
@@ -64,6 +66,7 @@ var port = process.env.PORT || 3000;
 
 vor.setup(app, io);
 live.setup(app, io);
+//predict.setup(app, io);
 
 server.listen(port, function() {
     console.log("Server listening on *:" + port);
