@@ -14,23 +14,17 @@ module.exports = {
         if (namespace === null) {
             namespace = io.of('/live');
             namespace.on('connection', function(sock) {
+                console.log('New Client "' + sock.id + '"');
+
                 var myDbo = dbo;
-                // TODO: Send all the current points for this flight
-                myDbo.getFlights()
-                    .then(function(docs) {
-                        docs.sort(function(a, b) {
-                            if (a.begin < b.begin) return -1;
-                            if (a.begin > b.begin) return 1;
-                            return 0;
-                        });
-                        if (docs.length === 0) {
-                            console.error('No flights found.');
-                            return;
-                        }
-                        var thisFlight = docs[docs.length - 1];
+                myDbo.getLatestFlight()
+                    .then(function(doc) {
+                        console.log('Latest Flight: ' + doc.name);
+
                         var query = {
                             time: {
-                                $gt: thisFlight.begin
+                                $gte: doc.begin,
+                                $lte: doc.end
                             }
                         };
                         var proj = {
@@ -41,10 +35,18 @@ module.exports = {
                             altitude: 1,
                             speed: 1
                         };
+
                         myDbo.getTracks(query, proj)
                             .then(function(docs) {
-                                sock.emit('points', docs);
+                                console.log('Found ' + docs.length + ' docs for client "' + sock.id + '".');
+                                sock.emit('initialpoints', docs);
+                            })
+                            .catch(function(err) {
+                                console.log('Error retrieving the tracks: ' + err);
                             });
+                    })
+                    .catch(function(err) {
+                        console.error('Error retrieving the lastest flight: ' + err);
                     });
             });
         }

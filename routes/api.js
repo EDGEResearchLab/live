@@ -3,16 +3,16 @@ var moment = require('moment');
 var express = require('express');
 var router = express.Router();
 
-router.all('/report', function(req, res) {
-    switch (req.method) {
-        case 'POST':
-            reportPostHandler(req, res);
-            break;
-        default:
-            res.status(405).send("Method not allowed");
-            break;
-    }
-});
+//router.all('/report', function(req, res) {
+//    switch (req.method) {
+//        case 'POST':
+//            reportPostHandler(req, res);
+//            break;
+//        default:
+//            res.status(405).send("Method not allowed");
+//            break;
+//    }
+//});
 
 // Used for dev/debug - Not for publishing
 //router.post('/vor', function(req, res) {

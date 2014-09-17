@@ -22,20 +22,34 @@ var initSocketIo = function() {
     var socket = io.connect(url);
     socket.on('connect', handleOnConnect);
     socket.on('disconnect', handleOnDisconnect);
-    socket.on('points', handleInitialPoints);
     socket.on('point', handleNewPoint);
+    socket.on('initialpoints', handleInitialPoints);
+};
+
+var updateStatusIcon = function(image_src, title) {
+    var statusIcon = $('#statusIcon');
+
+    if (image_src) {
+        statusIcon.attr('src', image_src);
+    }
+
+    if (title) {
+        statusIcon.attr('title', title);
+    }
 };
 
 var handleOnConnect = function() {
     console.log('Connected to the EDGE-RL live stream.');
 
-    var statusIcon = $('#statusIcon');
-    statusIcon.attr('src', 'images/status_ok.png');
-    statusIcon.attr('title', 'Connected');
+    updateStatusIcon('images/status_ok.png', 'Connected');
 
     // Blow out the old stuff since all points are resent on new connection.
     for (var t in trackables) {
-        t.clearPath();
+        try {
+            t.clearPath();
+        } catch (e) {
+            console.debug(e);
+        }
     }
     trackables = {};
 };
@@ -43,42 +57,18 @@ var handleOnConnect = function() {
 var handleOnDisconnect = function() {
     console.log('Disconnected from the EDGE-RL live stream.');
 
-    var statusIcon = $('#statusIcon');
-    statusIcon.attr('src', 'images/status_error.png');
-    statusIcon.attr('title', 'Disconnected.')
+    updateStatusIcon('images/status_error.png', 'Disconnected');
 };
 
 var handleInitialPoints = function(initial_points) {
-    logDebug("Loading initial points.");
-
-    try {
-        var tracker_points = initial_points;
-
-        // we get an array of trackables and their points
-        // {"id" : "uuid", "points" : []}
-        for (var i = 0; i < tracker_points.length; i++) {
-            var thisTrackable = tracker_points[i];
-            var thisId = thisTrackable['edgeId'];
-            var points = thisTrackable['points'];
-
-            logDebug("New Trackable: " + thisId);
-            trackables[thisId] = new Trackable(map, getDefaultPolyOpts());
-
-            // and an array of points
-            for (var j = 0; j < points.length; j++) {
-                var thisPoint = points[j];
-                logDebug("Tracking point: " + JSON.stringify(thisPoint));
-                trackables[thisTrackable['id']].addPoint(thisPoint['latitude'], thisPoint['longitude']);
-            }
-        }
-
-    } catch (e) { 
-        console.error(e);
+    for (var i = 0; i < initial_points.length; i++) {
+        handleNewPoint(initial_points[i]);
     }
 };
 
 var handleNewPoint = function(point_content) {
     try {
+        updateStatusIcon(null, 'Last Update: ' + new Date());
         logDebug("Received new point: " + JSON.stringify(point_content));
         var thisTrackable = point_content;
         var thisId = thisTrackable['edgeId'];
