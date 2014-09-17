@@ -3,16 +3,16 @@ var moment = require('moment');
 var express = require('express');
 var router = express.Router();
 
-//router.all('/report', function(req, res) {
-//    switch (req.method) {
-//        case 'POST':
-//            reportPostHandler(req, res);
-//            break;
-//        default:
-//            res.status(405).send("Method not allowed");
-//            break;
-//    }
-//});
+router.all('/report', function(req, res) {
+    switch (req.method) {
+        case 'POST':
+            reportPostHandler(req, res);
+            break;
+        default:
+            res.status(405).send("Method not allowed");
+            break;
+    }
+});
 
 // Used for dev/debug - Not for publishing
 //router.post('/vor', function(req, res) {
@@ -107,7 +107,7 @@ var newPointCheckAndEmit = function(newpoint, req) {
  */
 var isValidJson = function(js) {
     var fields = {
-        edgeId: /^[a-z0-9]+$/i, // digits, a-z only
+        edgeId: /^[-a-z0-9_]+$/i, // digits, a-z, _ and -
         latitude: /^[-+]?\d{1,3}(?:\.\d+)?$/, // decimal degrees.
         longitude: /^[-+]?\d{1,3}(?:\.\d+)?$/, // decimal degrees.
         altitude: /^[0-9]+(?:\.\d+)?$/, // int or double
@@ -118,7 +118,7 @@ var isValidJson = function(js) {
 
     for (var key in fields) {
         if (!(key in js) || !fields[key].test(js[key])) {
-            console.log('Invalid Edge JSON: ' + JSON.stringify(js));
+            console.log('Invalid Edge JSON (based on key "' + key + '"): ' + JSON.stringify(js));
             return false;
         }
     }
