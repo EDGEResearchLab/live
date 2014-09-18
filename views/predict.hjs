@@ -1,6 +1,6 @@
 {{#yield-scripts}}
 <script type="text/javascript" src="js/map.js"></script>
-<!--script type="text/javascript" src="js/predict.js"></script-->
+<script type="text/javascript" src="js/predict.js"></script>
 {{/yield-scripts}}
 
 {{#yield-body}}

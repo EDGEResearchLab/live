@@ -223,7 +223,7 @@ VorTrackable.prototype.update = function(point, vors) {
         this.addPoint(points[i].latitude, points[i].longitude);
     }
 
-    // TODO: display a marker on the balloon.
+    this.addMarker(point.latitude, point.longitude);
 };
 
 /**
@@ -257,6 +257,15 @@ VorTrackable.prototype.addPoint = function(latitude, longitude) {
         var path = this.polies[i].getPath();
         path.push(latLng);
     }
+};
+
+VorTrackable.prototype.addMarker = function(latitude, longitude) {
+    var marker = new google.maps.Marker({
+        position: new google.maps.LatLng(latitude, longitude),
+        map: this.gmap,
+        title: this.name
+    });
+    this.markers.push(marker);
 };
 
 /**

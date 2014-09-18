@@ -15,13 +15,13 @@ router.get('/', function(req, res) {
 });
 
 // We are assuming that we as the server are being responsible.
-function handleNewConnection(socket) {
+var handleNewConnection = function(socket) {
     if ('point' in latestResult && 'vors' in latestResult) {
         socket.emit('point', latestResult);
     }
 }
 
-function handleNewPoint(point) {
+var handleNewPoint = function(point) {
     var latestResult = {
         point: point,
         vors: []
@@ -47,7 +47,7 @@ function handleNewPoint(point) {
     });
 }
 
-function getVors(callback) {
+var getVors = function(callback) {
     var query = {
         state: {
             $in: ['CO', 'KS']

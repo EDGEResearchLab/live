@@ -23,12 +23,15 @@ router.all('/report', function(req, res) {
 
 // Used for dev/debug - Not for publishing
 router.post('/vor', function(req, res) {
+    if ('edgeId' in req.body) {
+        req.body.edgeId = hash.hashit(req.body.edgeId);
+    }
     req.app.emit('testpoint', req.body);
     res.status(200).send("nice.");
 });
 
-// TODO - Whitelist DBO
 router.post('/satcom', function(req, res) {
+    console.log('Raw Satcom Request: ' + req); // probably should remove this for prod
     satcomPostHandler(req);
     // **Always** give a 200, otherwise we back-up
     // the rockblock's queue and mess up our dataset.
@@ -36,7 +39,24 @@ router.post('/satcom', function(req, res) {
 });
 
 router.post('/predict', function(req, res) {
-    res.status(200).send("");
+    try {
+        if (!('edgeId' in req.body)) {
+            res.status(400).send('Missing EdgeId');
+            return;
+        } else if (!isWhiteListed(req.body.edgeId)) {
+            res.status(400).send('Bad edge id.');
+            return;
+        }
+
+        var newPoint = req.body;
+        newPoint['edgeId'] = hash.hashit(newPoint.edgeId);
+        console.log(newPoint.edgeId);
+        req.app.emit('prediction', newPoint);
+        res.status(200).send("OK");
+    } catch (e) {
+        console.log('/predict error: ' + e);
+        res.status(500).send(e);
+    }
 });
 
 var dayUtcToEpoch = function(day, utc) {
@@ -55,7 +75,7 @@ var dayUtcToEpoch = function(day, utc) {
 var satcomPostHandler = function(req) {
     try {
         var buff = new Buffer(req.body.data, 'hex');
-        // Hex, Little Endian
+        // Parse out the data from the payload, it's HEX, Little Endian
         var vars = binary.parse(buff)
             .word32ls('lat')
             .word32ls('lon')
@@ -94,11 +114,12 @@ var newPointCheckAndEmit = function(newpoint, req) {
             if (!res) {
                 console.log('Rejected Duplicate Point.');
             } else {
-                if (whitelist.length > 0 && whitelist.indexOf(newpoint['edgeId'].toLowerCase()) == -1) {
-                    console.log('Rejected point: ' + JSON.stringify(newpoint));
+                if (!isWhiteListed(newpoint['edgeId'].toLowerCase())) {
                     return;
                 }
+
                 console.log('Accepted new point: ' + JSON.stringify(newpoint));
+                // Grab receipt time (ish) to know a rough estimate of reporting latencies.
                 newpoint['receiptTime'] = new Date().getTime();
                 myDbo.saveTrack(newpoint);
                 
@@ -151,6 +172,14 @@ var verifyNewPoint = function(js, onSuccessCb) {
             onSuccessCb(docs.length === 0);
         })
         .catch(console.err);
+};
+
+var isWhiteListed = function(edgeId) {
+    if (whitelist.length > 0 && whitelist.indexOf(edgeId) == -1) {
+        console.log('EdgeId "' + edgeId + '" not whitelisted.');
+        return false;
+    }
+    return true;
 };
 
 module.exports = {
