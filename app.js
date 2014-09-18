@@ -66,6 +66,7 @@ var port = process.env.PORT || 3000;
 
 vor.setup(app, io);
 live.setup(app, io);
+api.setWhitelist(config.whitelist);
 //predict.setup(app, io);
 
 server.listen(port, function() {

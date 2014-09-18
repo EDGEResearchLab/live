@@ -3,28 +3,39 @@ var moment = require('moment');
 var express = require('express');
 var router = express.Router();
 
-//router.all('/report', function(req, res) {
-//    switch (req.method) {
-//        case 'POST':
-//            reportPostHandler(req, res);
-//            break;
-//        default:
-//            res.status(405).send("Method not allowed");
-//            break;
-//    }
-//});
+var hash = require('../lib/hash');
+var whitelist = [];
+
+router.all('/report', function(req, res) {
+    switch (req.method) {
+        case 'POST':
+            if (newPointCheckAndEmit(req.body, req)) {
+                res.status(202).send('Accepted');
+            } else {
+                res.status(400).send('invalid json payload');
+            }
+            break;
+        default:
+            res.status(405).send("Method not allowed");
+            break;
+    }
+});
 
 // Used for dev/debug - Not for publishing
-//router.post('/vor', function(req, res) {
-//    req.app.emit('testpoint', req.body);
-//    res.status(200).send("nice.");
-//});
+router.post('/vor', function(req, res) {
+    req.app.emit('testpoint', req.body);
+    res.status(200).send("nice.");
+});
 
 // TODO - Whitelist DBO
 router.post('/satcom', function(req, res) {
     satcomPostHandler(req);
     // **Always** give a 200, otherwise we back-up
     // the rockblock's queue and mess up our dataset.
+    res.status(200).send("");
+});
+
+router.post('/predict', function(req, res) {
     res.status(200).send("");
 });
 
@@ -75,14 +86,6 @@ var satcomPostHandler = function(req) {
     }
 };
 
-var reportPostHandler = function(req, res) {
-    if (newPointCheckAndEmit(req.body, req)) {
-        res.status(202).send('Accepted');
-    } else {
-        res.status(400).send('invalid json payload');
-    }
-};
-
 var newPointCheckAndEmit = function(newpoint, req) {
     var myDbo = dbo;
     if (isValidJson(newpoint)) {
@@ -91,9 +94,17 @@ var newPointCheckAndEmit = function(newpoint, req) {
             if (!res) {
                 console.log('Rejected Duplicate Point.');
             } else {
+                if (whitelist.length > 0 && whitelist.indexOf(newpoint['edgeId'].toLowerCase()) == -1) {
+                    console.log('Rejected point: ' + JSON.stringify(newpoint));
+                    return;
+                }
+                console.log('Accepted new point: ' + JSON.stringify(newpoint));
                 newpoint['receiptTime'] = new Date().getTime();
-                req.app.emit('newpoint', newpoint);
                 myDbo.saveTrack(newpoint);
+                
+                // Hash the edge id since we use them for whitelisting.
+                newPoint['edgeId'] = hash.hashit(newPoint['edgeId']);
+                req.app.emit('newpoint', newpoint);
             }
         });
         return true;
@@ -118,7 +129,7 @@ var isValidJson = function(js) {
 
     for (var key in fields) {
         if (!(key in js) || !fields[key].test(js[key])) {
-            console.log('Invalid Edge JSON (based on key "' + key + '"): ' + JSON.stringify(js));
+            console.log('Invalid Edge JSON (based on key "' + key + '"): ' + js[key]);
             return false;
         }
     }
@@ -143,6 +154,9 @@ var verifyNewPoint = function(js, onSuccessCb) {
 };
 
 module.exports = {
-    router: router
+    router: router,
+    setWhitelist: function(list) {
+        whitelist = list;
+    }
 };
 
