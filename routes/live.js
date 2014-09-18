@@ -1,4 +1,7 @@
 var express = require('express');
+
+var hash = require('../lib/hash');
+
 var router = express.Router();
 
 var namespace = null;
@@ -39,6 +42,9 @@ module.exports = {
                         myDbo.getTracks(query, proj)
                             .then(function(docs) {
                                 console.log('Found ' + docs.length + ' docs for client "' + sock.id + '".');
+                                for (var i = 0; i < docs.length; i++) {
+                                    docs[i].edgeId = hash.hashit(docs[i].edgeId);
+                                }
                                 sock.emit('initialpoints', docs);
                             })
                             .catch(function(err) {
