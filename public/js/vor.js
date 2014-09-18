@@ -120,10 +120,12 @@ var handleNewPoint = function(trackable) {
 };
 
 var addNewUiDisplay = function(id, color) {
+    // I think that document.addElement is faster, but seems less
+    // legible for creating a large block like this.
     var newUiFeature = [
         '<div id="' + id + '" class="vorInfoPane">',
             '<span class="title" style="color: ' + (color || '#000') + ';">',
-                '<h4>' + id + '</h4>',
+                '<h4>Edge ID: ' + id + '</h4>',
             '</span>',
             '<span class="row">',
                 '<span class="latlonalt"></span>',
@@ -158,7 +160,7 @@ var updateUi = function(id, point, vors) {
     var infoPane = $('#' + id);
 
     // This looks a little backwards, but first is grabbing the
-    // furthest to the right, and we want it ordered.
+    // furthest to the right, and we want it ordered, left to right.
     var vorUi = infoPane.find('.vor');
     vorUi.first().val(vors[1].call);
     vorUi.last().val(vors[0].call);
