@@ -1,7 +1,6 @@
 var centerOnBalloon = true;
 var trackables = {}; // hash for identifier/poly for client updates
 var hasReceivedPoints = false;
-var debug = true;
 
 $(document).ready(function() {
     initSocketIo();

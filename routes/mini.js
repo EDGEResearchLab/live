@@ -55,11 +55,11 @@ router.get('/', function(req, res) {
                     var dataString = '';
                     for (var i = 0; i < docs.length; i++) {
                         var thisDoc = docs[i];
-                        dataString += 'Id:' + thisDoc._id + '<br>';
-                        dataString += 'Lat:' + thisDoc.latitude + '<br>';
-                        dataString += 'Lon:' + thisDoc.longitude + '<br>';
-                        dataString += 'Alt:' + thisDoc.altitude + '<br>';
-                        dataString += 'Spd:' + thisDoc.speed + '<br>';
+                        dataString += 'Id:' + thisDoc._id + '<br/>';
+                        dataString += 'Lat:' + thisDoc.latitude + '<br/>';
+                        dataString += 'Lon:' + thisDoc.longitude + '<br/>';
+                        dataString += 'Alt:' + thisDoc.altitude + '<br/>';
+                        dataString += 'Spd:' + thisDoc.speed + '<br/>';
                         dataString += '<hr/><br/>';
                     }
 
