@@ -1,4 +1,3 @@
-var centerOnBalloon = true;
 var trackables = {}; // hash for identifier/poly for client updates
 var hasReceivedPoints = false;
 
@@ -72,26 +71,51 @@ var handleNewPoint = function(point_content) {
         console.debug('[' + thisId + '] Update');
         updateStatusIcon(null, 'Last Update: ' + new Date());
         trackables[thisId].addPoint(thisTrackable.latitude, thisTrackable.longitude);
+
+        // Set the map's center to the first received point.
+        if (!hasReceivedPoints) {
+            map.setCenter(new google.maps.LatLng(thisTrackable.latitude, thisTrackable.longitude));
+            hasReceivedPoints = true;
+        }
+
+        if (centerOnBalloon) {
+            centerMap();
+        }
+
     } catch (e) {
         console.error(e);
     }
 };
 
+var centerMap = function() {
+    var lat = 0;
+    var lng = 0;
+    var num = 0;
+
+    for (var key in trackables) {
+        lat += trackables[key].latestPoint.latitude;
+        lng += trackables[key].latestPoint.longitude;
+        num++;
+    }
+
+    if (num !== 0){
+        lat /= num;
+        lng /= num;
+        map.setCenter(new google.maps.LatLng(lat, lng));
+    }
+}
+
 function Trackable(gmap, polyOpts) {
     this.gmap = gmap;
     this.poly = Trackable._initPoly(gmap, polyOpts);
+    this.latestPoint = null;
 }
 
 Trackable.prototype.addPoint = function(latitude, longitude) {
     var point = new google.maps.LatLng(latitude, longitude);
     var path = this.poly.getPath();
     path.push(point);
-
-    // Set the map's center to the first received point.
-    if (!hasReceivedPoints) {
-        this.gmap.setCenter(point);
-        hasReceivedPoints = true;
-    }
+    this.latestPoint = {latitude: parseFloat(latitude), longitude: parseFloat(longitude)};
 };
 
 Trackable.prototype.clearPath = function() {
