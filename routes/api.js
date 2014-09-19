@@ -102,6 +102,8 @@ var satcomPostHandler = function(req) {
             source: 'satcom'
         };
 
+        console.log('Data Point: ' + JSON.stringify(dataPoint));
+
         newPointCheckAndEmit(dataPoint, req);
     } catch (e) {
         console.log('Error receiving from satcom: ' + e);
@@ -120,13 +122,13 @@ var newPointCheckAndEmit = function(newpoint, req) {
                     return;
                 }
 
-                console.log('Accepted new point: ' + JSON.stringify(newpoint));
+                console.log('Accepted new point for EdgeId: ' + newpoint.edgeId);
                 // Grab receipt time (ish) to know a rough estimate of reporting latencies.
                 newpoint['receiptTime'] = new Date().getTime();
                 myDbo.saveTrack(newpoint);
                 
                 // Hash the edge id since we use them for whitelisting.
-                newPoint['edgeId'] = hash.hashit(newPoint['edgeId']);
+                newpoint['edgeId'] = hash.hashit(newpoint['edgeId']);
                 req.app.emit('newpoint', newpoint);
             }
         });
