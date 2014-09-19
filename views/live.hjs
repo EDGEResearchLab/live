@@ -5,13 +5,9 @@
 
 {{#yield-body}}
 <div id="mainCenter">
-    <div id="map_container">
-        <div id="map_canvas"></div>
-    </div>
+    <div id="map_canvas"></div>
 </div>
 <div id="mainRight">
-    <div id="infoGraphic">
-        <img src="images/altitudeinfographic.png" alt="Infographic" />
-    </div>
+    <div id="flightInfo"></div>
 </div>
 {{/yield-body}}

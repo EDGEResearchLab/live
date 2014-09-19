@@ -1,7 +1,5 @@
 var express = require('express');
-
 var hash = require('../lib/hash');
-
 var router = express.Router();
 
 var namespace = null;
@@ -30,13 +28,16 @@ module.exports = {
                                 $lte: doc.end
                             }
                         };
+                        // This limits what is retrieved from mongo, similar to the "X,Y,Z" in:
+                        // `Select X,Y,Z FROM TABLE`
                         var proj = {
                             _id: 0,
                             edgeId: 1,
                             latitude: 1,
                             longitude: 1,
                             altitude: 1,
-                            speed: 1
+                            speed: 1,
+                            time: 1
                         };
 
                         myDbo.getTracks(query, proj)

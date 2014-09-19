@@ -4,7 +4,7 @@
 {{/yield-scripts}}
 
 {{#yield-body}}
-<div id="map_container">
+<div id="mainCenter">
     <div id="map_canvas"></div>
 </div>
 {{/yield-body}}

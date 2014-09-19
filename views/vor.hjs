@@ -5,9 +5,7 @@
 
 {{#yield-body}}
 <div id="mainCenter">
-    <div id="map_container">
-        <div id="map_canvas"></div>
-    </div>
+    <div id="map_canvas"></div>
 </div>
 <div id="mainRight">
     <div id="vorInfo"></div> 

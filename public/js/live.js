@@ -1,5 +1,4 @@
 var trackables = {}; // hash for identifier/poly for client updates
-var hasReceivedPoints = false;
 
 $(document).ready(function() {
     initSocketIo();
@@ -58,30 +57,53 @@ var handleInitialPoints = function(initial_points) {
     }
 };
 
-var handleNewPoint = function(point_content) {
+var handleNewPoint = function(newPoint) {
     try {
-        var thisTrackable = point_content;
-        var thisId = thisTrackable['edgeId'];
+        var thisId = newPoint['edgeId'];
+
+        // We will autocenter on the first received point (total)
+        // to orient the user to wherever we are launching from.
+        // After that, it will be up to the user to use map controls
+        if ($.isEmptyObject(trackables)) {
+            map.setCenter(new google.maps.LatLng(newPoint.latitude, newPoint.longitude));
+        }
 
         if (!trackables[thisId]) {
             console.debug('[' + thisId + '] New Trackable');
-            trackables[thisId] = new Trackable(map, getDefaultPolyOpts());
+            var polyOpts = getDefaultPolyOpts();
+            trackables[thisId] = new Trackable(map, polyOpts);
+            newInfoDisplay(thisId, polyOpts.strokeColor);
+        }
+
+        if (!$.isEmptyObject(trackables[thisId].latestPoint)) {
+            // Calculate the ascent rate in m/s.
+            newPoint['ascentRate'] = (function() {
+                try {
+                    var altDelta = newPoint.altitude - trackables[thisId].latestPoint.altitude;
+                    var timeDelta = newPoint.time - trackables[thisId].latestPoint.time;
+                    if (!timeDelta) {
+                        return 'NaN';
+                    }
+
+                    return (altDelta / timeDelta).toFixed(1);
+                } catch (e) {
+                    console.error('ascentRate calc error: ' + e);
+                    return 'err';
+                }
+            }());
         }
 
         console.debug('[' + thisId + '] Update');
+        // This doesn't really reflect reality on load, may need to update that to be
+        // the timestamp of the last received point.
         updateStatusIcon(null, 'Last Update: ' + new Date());
-        trackables[thisId].addPoint(thisTrackable.latitude, thisTrackable.longitude);
-
-        // Set the map's center to the first received point.
-        if (!hasReceivedPoints) {
-            map.setCenter(new google.maps.LatLng(thisTrackable.latitude, thisTrackable.longitude));
-            hasReceivedPoints = true;
-        }
-
+        trackables[thisId].addPoint(newPoint);
+        updateInfoDisplay(thisId, newPoint.altitude, newPoint.ascentRate);
+        
+        // Globally set and toggled via an overlay on the map (map.js)
         if (centerOnBalloon) {
             centerMap();
         }
-
     } catch (e) {
         console.error(e);
     }
@@ -92,30 +114,58 @@ var centerMap = function() {
     var lng = 0;
     var num = 0;
 
+    // Average out the latitude/longitude for centering.
+    // We are assuming that the trackables will all be 
+    // somewhat near each other, as this does not account
+    // for zoom.
     for (var key in trackables) {
         lat += trackables[key].latestPoint.latitude;
         lng += trackables[key].latestPoint.longitude;
         num++;
     }
 
-    if (num !== 0){
+    if (num !== 0) {
         lat /= num;
         lng /= num;
         map.setCenter(new google.maps.LatLng(lat, lng));
     }
-}
+};
+
+var newInfoDisplay = function(id, color) {
+    var elems = [
+        '<div id="' + id + '">',
+            '<span class="title">EdgeID: ' + id + '</span>',
+            'Alt: <span class="altitude"></span>m, ',
+            'Rate: <span class="rate"></span>m/s',
+        '</div>'
+    ];
+
+    $('#flightInfo').append(elems.join(''));
+    $('#flightInfo > #' + id + ' > .title').css('border-bottom', 'solid 1px ' + (color || '#000'));
+};
+
+var updateInfoDisplay = function(id, altitude, rate) {
+    var idsInfo = $('#flightInfo > #' + id);
+    idsInfo.find('.altitude').text(altitude);
+    idsInfo.find('.rate').text(rate);
+};
 
 function Trackable(gmap, polyOpts) {
     this.gmap = gmap;
     this.poly = Trackable._initPoly(gmap, polyOpts);
-    this.latestPoint = null;
+    this.latestPoint = {};
 }
 
-Trackable.prototype.addPoint = function(latitude, longitude) {
-    var point = new google.maps.LatLng(latitude, longitude);
+/**
+ * Add a new point to the map.
+ * @param: newPoint - This should be a hash of typical GPS data: 
+ * latitude (DD), longitude (DD), altitude (M), time (S since Epoch), and speed (m/s).
+ */
+Trackable.prototype.addPoint = function(newPoint) {
+    var point = new google.maps.LatLng(newPoint.latitude, newPoint.longitude);
     var path = this.poly.getPath();
     path.push(point);
-    this.latestPoint = {latitude: parseFloat(latitude), longitude: parseFloat(longitude)};
+    this.latestPoint = newPoint;
 };
 
 Trackable.prototype.clearPath = function() {

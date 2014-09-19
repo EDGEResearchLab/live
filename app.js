@@ -29,7 +29,8 @@ app.engine('hjs', require('hogan-express'));
 
 app.use(favicon(__dirname + '/public/images/favicon.ico'));
 app.use(logger('dev'));
-app.use(bodyParser.json());
+app.use(bodyParser.json()); // auto deserialize json
+app.use(bodyParser.urlencoded({extended: true})); // support satcom deserialization
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
