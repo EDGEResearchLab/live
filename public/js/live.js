@@ -98,7 +98,7 @@ var handleNewPoint = function(newPoint) {
         // the timestamp of the last received point.
         updateStatusIcon(null, 'Last Update: ' + new Date());
         trackables[thisId].addPoint(newPoint);
-        updateInfoDisplay(thisId, newPoint.altitude, newPoint.ascentRate);
+        updateInfoDisplay(thisId, newPoint);
         
         // Globally set and toggled via an overlay on the map (map.js)
         if (centerOnBalloon) {
@@ -135,6 +135,7 @@ var newInfoDisplay = function(id, color) {
     var elems = [
         '<div id="' + id + '">',
             '<span class="title">EdgeID: ' + id + '</span>',
+            '<span class="latitude"></span>, <span class="longitude"></span><br/>',
             'Alt: <span class="altitude"></span>m, ',
             'Rate: <span class="rate"></span>m/s',
         '</div>'
@@ -144,10 +145,12 @@ var newInfoDisplay = function(id, color) {
     $('#flightInfo > #' + id + ' > .title').css('border-bottom', 'solid 1px ' + (color || '#000'));
 };
 
-var updateInfoDisplay = function(id, altitude, rate) {
+var updateInfoDisplay = function(id, infoPoint) {
     var idsInfo = $('#flightInfo > #' + id);
-    idsInfo.find('.altitude').text(altitude);
-    idsInfo.find('.rate').text(rate);
+    idsInfo.find('.altitude').text(parseFloat(infoPoint.altitude).toFixed(1));
+    idsInfo.find('.rate').text(infoPoint.ascentRate);
+    idsInfo.find('.latitude').text(infoPoint.latitude);
+    idsInfo.find('.longitude').text(infoPoint.longitude);
 };
 
 function Trackable(gmap, polyOpts) {
