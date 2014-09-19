@@ -24,14 +24,16 @@ router.all('/report', function(req, res) {
 // Used for dev/debug - Not for publishing
 router.post('/vor', function(req, res) {
     if ('edgeId' in req.body) {
-        req.body.edgeId = hash.hashit(req.body.edgeId);
+        req.body.edgeId = hash.hashit(req.body.edgeId.toString());
     }
     req.app.emit('testpoint', req.body);
     res.status(200).send("nice.");
 });
 
 router.post('/satcom', function(req, res) {
-    console.log('Raw Satcom Request: ' + req); // probably should remove this for prod
+    console.log('Satcom headers: ' + JSON.stringify(req.headers));
+    console.log('Body: ' + req.body);
+    console.log('Raw Satcom Request: ' + JSON.stringify(req.body)); // probably should remove this for prod
     satcomPostHandler(req);
     // **Always** give a 200, otherwise we back-up
     // the rockblock's queue and mess up our dataset.
