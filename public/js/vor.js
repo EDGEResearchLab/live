@@ -124,7 +124,7 @@ var addNewUiDisplay = function(id, color) {
     // legible for creating a large block like this.
     var newUiFeature = [
         '<div id="' + id + '" class="vorInfoPane">',
-            '<span class="title" style="color: ' + (color || '#000') + ';">',
+            '<span class="title">',
                 '<h4>Edge ID: ' + id + '</h4>',
             '</span>',
             '<span class="row">',
@@ -148,6 +148,10 @@ var addNewUiDisplay = function(id, color) {
         '</div>'
     ];
     $('#vorInfo').append(newUiFeature.join(''));
+
+    var thisInfo = $('#' + id);
+    var thisTitle = thisInfo.find('.title');
+    thisTitle.css('border-bottom', 'solid 1px ' + color);
 };
 
 /**
@@ -175,12 +179,13 @@ var updateUi = function(id, point, vors) {
 
     var balloon = infoPane.find('.latlonalt').first();
     var balloonDisplay = '';
-    balloonDisplay += parseFloat(point.latitude).toFixed(2).toString();
+    balloonDisplay += parseFloat(point.latitude).toFixed(3).toString();
     balloonDisplay += ', ';
-    balloonDisplay += parseFloat(point.longitude).toFixed(2).toString();
+    balloonDisplay += parseFloat(point.longitude).toFixed(3).toString();
     if ('altitude' in point) {
         balloonDisplay += ' @ ';
-        balloonDisplay += parseFloat(point.altitude).toFixed(2).toString();
+        balloonDisplay += parseFloat(point.altitude).toFixed(0).toString();
+        balloonDisplay += 'm';
     }
     balloon.html(balloonDisplay);
 }
