@@ -9,12 +9,35 @@ var initSocketIo = function() {
     if (!(/\/live$/.test(url))) {
         url += 'live';
     }
-    console.log('Web Socket URL: ' + url);
+    console.log('Connecting to: ' + url);
     var socket = io.connect(url);
-    socket.on('connect', handleOnConnect);
-    socket.on('disconnect', handleOnDisconnect);
+
+    socket.on('connect', function() {
+        console.log('Connected.');
+        updateStatusIcon('images/status_ok.png', 'Connected');
+        for (var t in trackables) {
+            try {
+                t.clearPath();
+            } catch (e) {
+                console.debug(e);
+            }
+        }
+        trackables = {};
+    });
+
+    socket.on('disconnect', function() {
+        console.log('Disconnected');
+        updateStatusIcon('images/status_error.png', 'Disconnected');
+    });
+
+    socket.on('initialpoints', function(points) {
+        for (var i = 0; i < points.length; i++) {
+            handleNewPoint(points[i]);
+        }
+    });
+
     socket.on('point', handleNewPoint);
-    socket.on('initialpoints', handleInitialPoints);
+    // socket.on('prediction', handlePrediction);
 };
 
 var updateStatusIcon = function(image_src, title) {
@@ -29,41 +52,14 @@ var updateStatusIcon = function(image_src, title) {
     }
 };
 
-var handleOnConnect = function() {
-    console.log('Connected to the EDGE-RL live stream.');
-
-    updateStatusIcon('images/status_ok.png', 'Connected');
-
-    // Blow out the old stuff since all points are resent on new connection.
-    for (var t in trackables) {
-        try {
-            t.clearPath();
-        } catch (e) {
-            console.debug(e);
-        }
-    }
-    trackables = {};
-};
-
-var handleOnDisconnect = function() {
-    console.log('Disconnected from the EDGE-RL live stream.');
-
-    updateStatusIcon('images/status_error.png', 'Disconnected');
-};
-
-var handleInitialPoints = function(initial_points) {
-    for (var i = 0; i < initial_points.length; i++) {
-        handleNewPoint(initial_points[i]);
-    }
-};
-
 var handleNewPoint = function(newPoint) {
     try {
-        var thisId = newPoint['edgeId'];
+        var thisId = newPoint.edgeId;
 
         // We will autocenter on the first received point (total)
         // to orient the user to wherever we are launching from.
-        // After that, it will be up to the user to use map controls
+        // Anything beyond that is dependent on the user's selection
+        // on the map.
         if ($.isEmptyObject(trackables)) {
             map.setCenter(new google.maps.LatLng(newPoint.latitude, newPoint.longitude));
         }
@@ -99,7 +95,7 @@ var handleNewPoint = function(newPoint) {
         updateStatusIcon(null, 'Last Update: ' + new Date());
         trackables[thisId].addPoint(newPoint);
         updateInfoDisplay(thisId, newPoint);
-        
+
         // Globally set and toggled via an overlay on the map (map.js)
         if (centerOnBalloon) {
             centerMap();
@@ -115,7 +111,7 @@ var centerMap = function() {
     var num = 0;
 
     // Average out the latitude/longitude for centering.
-    // We are assuming that the trackables will all be 
+    // We are assuming that the trackables will all be
     // somewhat near each other, as this does not account
     // for zoom.
     for (var key in trackables) {
@@ -132,6 +128,12 @@ var centerMap = function() {
 };
 
 var newInfoDisplay = function(id, color) {
+    var infoArea = $('#flightInfo > #' + id);
+    // The area is already populated.
+    if (infoArea.length == 0) {
+        return;
+    }
+
     var elems = [
         '<div id="' + id + '">',
             '<span class="title">EdgeID: ' + id + '</span>',
@@ -161,7 +163,7 @@ function Trackable(gmap, polyOpts) {
 
 /**
  * Add a new point to the map.
- * @param: newPoint - This should be a hash of typical GPS data: 
+ * @param: newPoint - This should be a hash of typical GPS data:
  * latitude (DD), longitude (DD), altitude (M), time (S since Epoch), and speed (m/s).
  */
 Trackable.prototype.addPoint = function(newPoint) {
