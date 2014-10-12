@@ -16,24 +16,24 @@ var mini = require('./routes/mini');
 var api = require('./routes/api');
 
 var config = require('./config');
-
-global.dbo = new db.connection(config);
-
 var app = express();
+
+global.dbo = new db.connection(config.mongo);
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hjs');
-app.set('layout', 'layout'); // any rendered page will inherit
+app.set('layout', 'layout'); // Any rendered page populates this.
 app.enable('view cache');
 app.engine('hjs', require('hogan-express'));
 
 app.use(favicon(__dirname + '/public/images/favicon.ico'));
 app.use(logger('dev'));
-app.use(bodyParser.json()); // auto deserialize json
-app.use(bodyParser.urlencoded({extended: true})); // support satcom deserialization
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use('/', live.router);
 app.use('/live', live.router);
 app.use('/vor', vor.router);
 app.use('/predict', predict.router);
@@ -41,13 +41,8 @@ app.use('/mini', mini.router);
 
 app.use('/api', api.router);
 
-// Anything not found will just be redirected to live.
-app.use('/', function(req, res, next) {
-    res.redirect('/live');
-});
-
-// Error Handlers
-app.use(function(req, res, next) {
+// Anything not found will yield a 404 page.
+app.use('*', function(req, res, next) {
     var err = new Error('Not Found');
     err.status = 404;
     next(err);

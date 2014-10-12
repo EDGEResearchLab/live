@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <title>{{ title }}</title>
+
         <meta name="description" content="EDGE Research Lab's Live tracking site" />
         <meta name="keywords" content="EDGE Research Lab, Scientific Research, Live Tracking" />
         <meta name="author" content="Matt Rasband; David Hughes; Robert Long" />
@@ -8,9 +10,9 @@
         <meta http-equiv="pragma" content="no-cache" />
         <meta http-equiv="expires" content="-1" />
 
-        <title>{{ title }}</title>
-        <link rel="shortcut icon" href="images/favicon.ico?v=2" />
+        <link rel="shortcut icon" href="images/favicon.ico" />
         <link rel="stylesheet" type="text/css" href="stylesheets/main.css">
+        <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
         {{{yield-css}}}
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
@@ -25,10 +27,10 @@
                     <img id="edgeLogo" src="images/edgeLogo-sm.png" alt="EDGE Research Lab" />
                 </a>
                 <div id="menu">
-                    <a href="/">Live</a> | 
-                    <a href="/vor" target="_self">Vor</a> | 
-                    <a href="/predict" target="_self">Predict</a> | 
-                    <a href="http://www.edgeresearchlab.org" target="_blank">Edge</a> | 
+                    <a href="/">Live</a> |
+                    <a href="/vor" target="_self">Vor</a> |
+                    <a href="/predict" target="_self">Predict</a> |
+                    <a href="http://www.edgeresearchlab.org" target="_blank">Edge</a> |
                     <img src="images/status_error.png" id="statusIcon" class="statusIcon" title="Not Connected" />
                 </div>
             </header>
@@ -38,17 +40,11 @@
             </section>
 
             <footer>
-                <div>
-                    <div class="copyright">&copy; 2014</div>
-                    <a href="http://www.youtube.com/user/EDGEResearchLab" target="_blank">
-                        <img class="socialIcons" src="images/socialYouTube.png" alt="EDGE on YouTube!" title="YouTube"/>
-                    </a>
-                    <a href="http://www.twitter.com/EDGEResearchLab" target="_blank">
-                        <img class="socialIcons" src="images/socialTwitter.png" alt="EDGE on Twitter!" title="Twitter"/>
-                    </a>
-                    <a href="http://www.github.com/EDGEResearchLab" target="_blank">
-                        <img class="socialIcons github" src="images/socialGithub.png" alt="EDGE on GitHub" title="GitHub"/>
-                    </a>
+                <div class="copyright"><span class="fa fa-copyright"/> 2014</div>
+                <div id="socials">
+                    <a href="http://www.twitter.com/EDGEResearchLab" target="_blank" title="Twitter" class="fasocial fa fa-twitter fa-lg"></a>
+                    <a href="http://www.github.com/EDGEResearchLab" target="_blank"  title="GitHub" class="fasocial fa fa-github fa-lg"></a>
+                    <a href="http://www.youtube.com/user/EDGEResearchLab" target="_blank" title="YouTube" class="fasocial fa fa-youtube fa-lg"></a>
                 </div>
                 <div style="clear: both;"></div>
             </footer>
