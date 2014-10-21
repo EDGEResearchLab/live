@@ -17,7 +17,7 @@
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
         <script type="text/javascript" src="/socket.io/socket.io.js"></script>
-        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC7vrJH7vkDVOYp0mXB26VY7mSIR0qckhs&sensor=false&libraries=geometry"></script>
+        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDElRsfvj9mYEPmZ7RrOtf3V_QQ8uhlVq0&sensor=false&libraries=geometry"></script>
         {{{yield-scripts}}}
     </head>
     <body>
