@@ -20,19 +20,23 @@ var app = express();
 
 global.dbo = new db.connection(config.mongo);
 
+// Templates folder for html generation
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hjs');
-app.set('layout', 'layout'); // Any rendered page populates this.
+// Default template, that all others populate:
+app.set('layout', 'layout');
 app.enable('view cache');
 app.engine('hjs', require('hogan-express'));
 
 app.use(favicon(__dirname + '/public/images/favicon.ico'));
 app.use(logger('dev'));
 app.use(bodyParser.json());
+// Parser for urlencoded multiform data, used for SATCOM parsing
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Our routes
 app.use('/', live.router);
 app.use('/live', live.router);
 app.use('/vor', vor.router);
@@ -41,7 +45,8 @@ app.use('/mini', mini.router);
 
 app.use('/api', api.router);
 
-// Anything not found will yield a 404 page.
+// Any paths that aren't already registered are handled
+// by the error page (404):
 app.use('*', function(req, res, next) {
     var err = new Error('Not Found');
     err.status = 404;
@@ -68,4 +73,3 @@ predict.setup(app, io);
 server.listen(port, function() {
     console.log("Server listening on *:" + port);
 });
-

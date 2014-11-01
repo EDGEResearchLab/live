@@ -23,7 +23,7 @@ module.exports = {
                         console.log('Latest Flight: ' + doc.name);
 
                         var query = {
-                            time: {
+                            receiptTime: {
                                 $gte: doc.begin,
                                 $lte: doc.end
                             }
@@ -37,7 +37,8 @@ module.exports = {
                             longitude: 1,
                             altitude: 1,
                             speed: 1,
-                            time: 1
+                            time: 1,
+                            receiptTime: 1
                         };
 
                         myDbo.getTracks(query, proj)

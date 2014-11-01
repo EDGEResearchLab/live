@@ -51,7 +51,7 @@ router.post('/predict', function(req, res) {
         }
 
         var newPoint = req.body;
-        newPoint['edgeId'] = hash.hashit(newPoint.edgeId);
+        newPoint.edgeId = hash.hashit(newPoint.edgeId);
         console.log(newPoint.edgeId);
         req.app.emit('prediction', newPoint);
         res.status(200).send("OK");
@@ -63,7 +63,7 @@ router.post('/predict', function(req, res) {
 
 var dayUtcToEpoch = function(day, utc) {
     day = day.toString();
-    utc = utc.toString();                                                                            
+    utc = utc.toString();
     if (day.length < 6) {
         day = '0' + day;
     }
@@ -118,17 +118,17 @@ var newPointCheckAndEmit = function(newpoint, req) {
             if (!res) {
                 console.log('Rejected Duplicate Point.');
             } else {
-                if (!isWhiteListed(newpoint['edgeId'].toLowerCase())) {
+                if (!isWhiteListed(newpoint.edgeId.toLowerCase())) {
                     return;
                 }
 
                 console.log('Accepted new point for EdgeId: ' + newpoint.edgeId);
                 // Grab receipt time (ish) to know a rough estimate of reporting latencies.
-                newpoint['receiptTime'] = new Date().getTime();
+                newpoint.receiptTime = parseInt(new Date().getTime() / 1000);
                 myDbo.saveTrack(newpoint);
-                
+
                 // Hash the edge id since we use them for whitelisting.
-                newpoint['edgeId'] = hash.hashit(newpoint['edgeId']);
+                newpoint.edgeId = hash.hashit(newpoint.edgeId);
                 req.app.emit('newpoint', newpoint);
             }
         });

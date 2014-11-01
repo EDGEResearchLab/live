@@ -19,7 +19,7 @@ var handleNewConnection = function(socket) {
     if ('point' in latestResult && 'vors' in latestResult) {
         socket.emit('point', latestResult);
     }
-}
+};
 
 var handleNewPoint = function(point) {
     var latestResult = {
@@ -28,7 +28,7 @@ var handleNewPoint = function(point) {
     };
     getVors(function(docs) {
         for(var i = 0; i < docs.length; i++) {
-            docs[i]['distance'] = gps.distanceBetween(point.latitude, point.longitude, docs[i].latitude, docs[i].longitude);
+            docs[i].distance = gps.distanceBetween(point.latitude, point.longitude, docs[i].latitude, docs[i].longitude);
         }
         docs.sort(function(a, b) {
             if (a.distance < b.distance) return -1;
@@ -37,7 +37,7 @@ var handleNewPoint = function(point) {
         });
 
         for (var i = 0; i < 2; i++) {
-            docs[i]['bearing'] = gps.bearing(docs[i].latitude, docs[i].longitude, point.latitude, point.longitude);
+            docs[i].bearing = gps.bearing(docs[i].latitude, docs[i].longitude, point.latitude, point.longitude);
             latestResult.vors.push(docs[i]);
         }
 
@@ -45,7 +45,7 @@ var handleNewPoint = function(point) {
         //latestResult.vors.push(docs[1]);
         namespace.emit('point', latestResult);
     });
-}
+};
 
 var getVors = function(callback) {
     var query = {
@@ -63,7 +63,7 @@ var getVors = function(callback) {
     dbo.getVors(query, proj)
         .then(callback)
         .catch(console.err);
-}
+};
 
 module.exports = {
     router: router,

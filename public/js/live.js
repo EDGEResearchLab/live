@@ -55,6 +55,7 @@ var updateStatusIcon = function(image_src, title) {
 var handleNewPoint = function(newPoint) {
     try {
         var thisId = newPoint.edgeId;
+        console.log('New Point: ' + thisId);
 
         // We will autocenter on the first received point (total)
         // to orient the user to wherever we are launching from.
@@ -73,7 +74,7 @@ var handleNewPoint = function(newPoint) {
 
         if (!$.isEmptyObject(trackables[thisId].latestPoint)) {
             // Calculate the ascent rate in m/s.
-            newPoint['ascentRate'] = (function() {
+            newPoint.ascentRate = (function() {
                 try {
                     var altDelta = newPoint.altitude - trackables[thisId].latestPoint.altitude;
                     var timeDelta = newPoint.time - trackables[thisId].latestPoint.time;
@@ -130,7 +131,7 @@ var centerMap = function() {
 var newInfoDisplay = function(id, color) {
     var infoArea = $('#flightInfo > #' + id);
     // The area is already populated.
-    if (infoArea.length == 0) {
+    if (infoArea.length > 0) {
         return;
     }
 
