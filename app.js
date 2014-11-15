@@ -36,13 +36,14 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Our routes
+// UI Routes
 app.use('/', live.router);
 app.use('/live', live.router);
 app.use('/vor', vor.router);
 app.use('/predict', predict.router);
 app.use('/mini', mini.router);
 
+// API Routes
 app.use('/api', api.router);
 
 // Any paths that aren't already registered are handled

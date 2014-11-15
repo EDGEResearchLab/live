@@ -6,18 +6,11 @@ var router = express.Router();
 var hash = require('../lib/hash');
 var whitelist = [];
 
-router.all('/report', function(req, res) {
-    switch (req.method) {
-        case 'POST':
-            if (newPointCheckAndEmit(req.body, req)) {
-                res.status(202).send('Accepted');
-            } else {
-                res.status(400).send('invalid json payload');
-            }
-            break;
-        default:
-            res.status(405).send("Method not allowed");
-            break;
+router.post('/report', function(req, res) {
+    if (newPointCheckAndEmit(req.body, req)) {
+        res.status(202).send('Accepted');
+    } else {
+        res.status(400).send('Invalid JSON Payload');
     }
 });
 
@@ -65,10 +58,10 @@ var dayUtcToEpoch = function(day, utc) {
     day = day.toString();
     utc = utc.toString();
     if (day.length < 6) {
-        day = '0' + day;
+        day = '0' + day.toString();
     }
     if (utc.length < 8) {
-        utc = '0' + utc;
+        utc = '0' + utc.toString();
     }
     utc = utc.substr(0, utc.length - 2);
     return moment(day + '' + utc, 'MMDDYYHHmmss') / 1000; // utc, epoch
