@@ -1,0 +1,10 @@
+{
+    "mongo": {
+        "username": "<username>",
+        "password": "<password>",
+        "host": "<hostname>",
+        "port": "<port>",
+        "db": "<db>"
+    },
+    "whitelist": ["<whitelisted_header_value>"]
+}
