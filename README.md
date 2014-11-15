@@ -1,4 +1,4 @@
-EDGE Research Lab: Live Telemetry Tracking 
+EDGE Research Lab: Live Telemetry Tracking
 ====
 
 This repository is the live website used for tracking flights and reporting on data.

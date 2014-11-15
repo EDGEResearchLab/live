@@ -1,11 +1,11 @@
 /*
     (c) 2014 All Rights Reserved.
-    
+
     Google Maps is a trademark of Google, Inc.  Edge Research Lab nor Edge RL
     are affiliated with Google nor any subsidiaries of Google.  The map is used
     under the free developer API.  If the map stops functioning during a flight,
     we probably passed our quota.
-    
+
     Disclaimer:
         This code is under testing.  All information is obtained from sources
     deemed reliable.  However, the current and/or continued reliability cannot
@@ -101,9 +101,9 @@ var handleNewPoint = function(trackable) {
     try {
         updateStatusIcon(null, 'Last Update: ' + new Date());
 
-        var vors = trackable['vors'];
-        var point = trackable['point'];
-        var id = point['edgeId'];
+        var vors = trackable.vors;
+        var point = trackable.point;
+        var id = point.edgeId;
 
         if (!trackables[id]) {
             console.debug("New Trackable: " + id);
@@ -188,7 +188,7 @@ var updateUi = function(id, point, vors) {
         balloonDisplay += 'm';
     }
     balloon.html(balloonDisplay);
-}
+};
 
 /**
  * Object for a trackable object in the VOR system.
@@ -233,7 +233,7 @@ VorTrackable.prototype.update = function(point, vors) {
 
 /**
  * Clear the poly ling from the map.
- * 
+ *
  * @return void
  */
 VorTrackable.prototype.clear = function() {
@@ -245,8 +245,8 @@ VorTrackable.prototype.clear = function() {
     // Remove the markers from the map before clearing the array
     // Otherwise the references are lost and we can't edit them,
     // and they will stay visible.
-    for (var i = 0; i < this.markers.length; i++) {
-        this.markers[i].setMap(null);
+    for (var j = 0; j < this.markers.length; j++) {
+        this.markers[j].setMap(null);
     }
     this.markers = [];
 };
@@ -264,6 +264,13 @@ VorTrackable.prototype.addPoint = function(latitude, longitude) {
     }
 };
 
+/**
+ * Add a marker to the map.
+ *
+ * @param latitude - Latitude in decimal degrees
+ * @param longitude - Longitude in decimal degrees
+ * @return void
+ */
 VorTrackable.prototype.addMarker = function(latitude, longitude) {
     var marker = new google.maps.Marker({
         position: new google.maps.LatLng(latitude, longitude),
@@ -284,4 +291,23 @@ VorTrackable._initPoly = function(gmap, opts) {
     var poly = new google.maps.Polyline(opts);
     poly.setMap(gmap);
     return poly;
+};
+
+/**
+ * Convert decimal degrees into Degrees/Minutes/Seconds.
+ *
+ * @param decimalDegs - Decimal Degrees to convert
+ * @return Hash with degrees/minutes/seconds broken out.
+ */
+var decimalDegreesToDegMinSec = function(decimalDegs) {
+    var deg = decimalDegs | 0;
+    var frac = Math.abs(decimalDegs - deg);
+    var min = (frac * 60) | 0;
+    var sec = frac * 3600 - min * 60;
+
+    return {
+        degrees: deg,
+        minutes: min,
+        seconds: sec
+    };
 };

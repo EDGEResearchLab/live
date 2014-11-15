@@ -6,22 +6,23 @@ var router = express.Router();
 var hash = require('../lib/hash');
 var whitelist = [];
 
-router.post('/report', function(req, res) {
-    if (newPointCheckAndEmit(req.body, req)) {
-        res.status(202).send('Accepted');
-    } else {
-        res.status(400).send('Invalid JSON Payload');
-    }
-});
+// Debug route.
+// router.post('/report', function(req, res) {
+//     if (newPointCheckAndEmit(req.body, req)) {
+//         res.status(202).send('Accepted');
+//     } else {
+//         res.status(400).send('Invalid JSON Payload');
+//     }
+// });
 
-// Used for dev/debug - Not for publishing
-router.post('/vor', function(req, res) {
-    if ('edgeId' in req.body) {
-        req.body.edgeId = hash.hashit(req.body.edgeId.toString());
-    }
-    req.app.emit('testpoint', req.body);
-    res.status(200).send("nice.");
-});
+// Debug route.
+// router.post('/vor', function(req, res) {
+//     if ('edgeId' in req.body) {
+//         req.body.edgeId = hash.hashit(req.body.edgeId.toString());
+//     }
+//     req.app.emit('testpoint', req.body);
+//     res.status(200).send("nice.");
+// });
 
 router.post('/satcom', function(req, res) {
     console.log('Satcom headers: ' + JSON.stringify(req.headers));
