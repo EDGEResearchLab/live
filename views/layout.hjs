@@ -29,7 +29,7 @@
                 <div id="menu">
                     <a href="/">Live</a> |
                     <a href="/vor" target="_self">Vor</a> |
-                    <a href="/predict" target="_self">Predict</a> |
+                    <!-- <a href="/predict" target="_self">Predict</a> | -->
                     <a href="http://www.edgeresearchlab.org" target="_blank">Edge</a> |
                     <img src="images/status_error.png" id="statusIcon" class="statusIcon" title="Not Connected" />
                 </div>

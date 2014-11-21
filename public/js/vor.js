@@ -99,6 +99,7 @@ var handleOnDisconnect = function() {
  */
 var handleNewPoint = function(trackable) {
     try {
+        console.debug("New Point: " + JSON.stringify(trackable));
         updateStatusIcon(null, 'Last Update: ' + new Date());
 
         var vors = trackable.vors;
@@ -179,13 +180,13 @@ var updateUi = function(id, point, vors) {
 
     var balloon = infoPane.find('.latlonalt').first();
     var balloonDisplay = '';
-    balloonDisplay += parseFloat(point.latitude).toFixed(3).toString();
+    balloonDisplay += point.faaLatitude;
     balloonDisplay += ', ';
-    balloonDisplay += parseFloat(point.longitude).toFixed(3).toString();
+    balloonDisplay += point.faaLongitude;
     if ('altitude' in point) {
         balloonDisplay += ' @ ';
         balloonDisplay += parseFloat(point.altitude).toFixed(0).toString();
-        balloonDisplay += 'm';
+        balloonDisplay += 'ft';
     }
     balloon.html(balloonDisplay);
 };
