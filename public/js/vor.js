@@ -74,7 +74,7 @@ var handleOnConnect = function() {
     // Blow out the old stuff since the latest
     // vor is sent on connection.
     for (var t in trackables) {
-        t.clearPath();
+        trackables[t].clearPath();
     }
     trackables = {};
 };

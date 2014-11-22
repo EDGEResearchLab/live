@@ -45,12 +45,27 @@ var handleNewConnection = function(sock) {
             myDbo.getTracks(query, proj)
                 .then(function(docs) {
                     console.log('VOR: Finding latest point for client ' + sock.id);
-                    var latestDoc = docs[docs.length - 1];
-                    latestDoc.edgeId = hash.hashit(latestDoc.edgeId);
 
-                    findVorsForPoint(latestDoc)
+                    var items = {};
+                    docs.forEach(function(doc) {
+                        if (!(doc.edgeId in items)) {
+                            items[doc.edgeId] = doc;
+                        } else if (doc.receiptTime > items[doc.edgeId].receiptTime) {
+                            items[doc.edgeId]  = doc;
+                        }
+                    });
+
+                    var latestPoints = [];
+                    for (var key in items) {
+                        items[key].edgeId = hash.hashit(items[key].edgeId);
+                        latestPoints.push(items[key]);
+                    }
+
+                    findVorsForPoint(latestPoints)
                         .then(function(results) {
-                            sock.emit('point', results);
+                            results.forEach(function(r) {
+                                sock.emit('point', r);
+                            });
                         })
                         .catch(function(err) {
                             console.log('Error: ' + err);
@@ -73,46 +88,57 @@ var handleNewPoint = function(point) {
 
     findVorsForPoint(point)
         .then(function(results) {
-            namespace.emit('point', results);
+            results.forEach(function(r) {
+                namespace.emit('point', r);
+            });
         })
         .catch(function(err) {
             console.log('Error finding vors for point: ' + err);
         });
 };
 
-var findVorsForPoint = function(point) {
+var findVorsForPoint = function(points) {
     var deferred = Promises.pending();
 
-    var latestResult = {
-        point: point,
-        vors: []
-    };
+    function sortOnDistance(a, b) {
+        if (a.distance < b.distance) return -1;
+        if (a.distance > b.distance) return 1;
+        return 0;
+    }
 
     getVors(function(docs) {
-        for(var i = 0; i < docs.length; i++) {
-            docs[i].distance = gps.distanceBetween(point.latitude, point.longitude, docs[i].latitude, docs[i].longitude);
-        }
-        docs.sort(function(a, b) {
-            if (a.distance < b.distance) {
-                return -1;
-            }
-            if (a.distance > b.distance) {
-                return 1;
-            }
-            return 0;
-        });
-
-        for (var j = 0; j < 2; j++) {
-            docs[j].bearing = gps.bearing(docs[j].latitude, docs[j].longitude, point.latitude, point.longitude);
-            docs[j] = formatForFAA(docs[j]);
-            latestResult.vors.push(docs[j]);
+        if (!(Array.isArray(points))) {
+            points = [points];
         }
 
-        latestResult.point = formatForFAA(latestResult.point);
+        var results = [];
 
-        console.log('Found VORS for new point: ' + JSON.stringify(latestResult));
+        for (var i = 0; i < points.length; i++) {
+            var point = points[i];
+            var res = {
+                point: point,
+                vors: []
+            };
 
-        deferred.resolve(latestResult);
+            for (var j = 0; j < docs.length; j++) {
+                docs[i].distance = gps.distanceBetween(point.latitude, point.longitude, docs[i].latitude, docs[i].longitude);
+            }
+
+            docs.sort(sortOnDistance);
+
+            for (var k = 0; k < 2; k++) {
+                docs[k].bearing = gps.bearing(docs[k].latitude, docs[k].longitude, point.latitude, point.longitude);
+                docs[k] = formatForFAA(docs[k]);
+                res.vors.push(docs[k]);
+            }
+
+            res.point = formatForFAA(res.point);
+            results.push(res);
+        }
+
+        console.log('Found VORS for points: ' + JSON.stringify(results));
+
+        deferred.resolve(results);
     });
 
     return deferred.promise;
