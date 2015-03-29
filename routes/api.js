@@ -1,33 +1,29 @@
 var binary = require('binary');
 var moment = require('moment');
+
+var jspack = require('jspack').jspack;
 var express = require('express');
 var router = express.Router();
+
+var winston = require('winston');
 
 var hash = require('../lib/hash');
 var whitelist = [];
 
-// Debug route.
-// router.post('/report', function(req, res) {
-//     if (newPointCheckAndEmit(req.body, req)) {
-//         res.status(202).send('Accepted');
-//     } else {
-//         res.status(400).send('Invalid JSON Payload');
-//     }
-// });
-
-// Debug route.
-// router.post('/vor', function(req, res) {
-//     if ('edgeId' in req.body) {
-//         req.body.edgeId = hash.hashit(req.body.edgeId.toString());
-//     }
-//     req.app.emit('testpoint', req.body);
-//     res.status(200).send("nice.");
-// });
+var logger = new winston.Logger({
+	transports: [
+		new winston.transports.Console(),
+		new winston.transports.File({
+			filename: '/root/live/routes/api.log',
+			level: 'debug'
+		})
+	]
+});
 
 router.post('/satcom', function(req, res) {
-    console.log('Satcom headers: ' + JSON.stringify(req.headers));
-    console.log('Body: ' + req.body);
-    console.log('Raw Satcom Request: ' + JSON.stringify(req.body)); // probably should remove this for prod
+    logger.info('Satcom Headers: ' + JSON.stringify(req.headers));
+    logger.info('Body: ' + req.body);
+    logger.info('Raw Satcom Request: ' + JSON.stringify(req.body));
     satcomPostHandler(req);
     // **Always** give a 200, otherwise we back-up
     // the rockblock's queue and mess up our dataset.
@@ -71,28 +67,25 @@ var dayUtcToEpoch = function(day, utc) {
 var satcomPostHandler = function(req) {
     try {
         var buff = new Buffer(req.body.data, 'hex');
-        // Parse out the data from the payload, it's HEX, Little Endian
-        var vars = binary.parse(buff)
-            .word32ls('lat')
-            .word32ls('lon')
-            .word32ls('alt')
-            .word16lu('spd')
-            .word16lu('dir')
-            .word32lu('day')
-            .word32lu('utc')
-            // We don't really care about these on the server.
-            //.word32lu('age')
-            //.word16lu('hdr')
-            .vars;
+	var struct = jspack.Unpack('>lllhhlll', buff);
+
+	var lat =  struct[0] / 1e6;
+	var lon =  struct[1] / 1e6;
+	var alt =  struct[2] / 100;
+	var spd =  struct[3] / 100;
+	var dir =  struct[4] / 100;
+	var day =  struct[5];
+	var utc =  struct[6];
+	var age =  struct[7];
 
         var dataPoint = {
             edgeId: ('imei' in req.body) ? req.body.imei :  "",
-            latitude: vars.lat / 1000000,
-            longitude: vars.lon / 1000000,
-            altitude: vars.alt / 100,
-            speed: (vars.speed >> 16) / 100,
-            direction: (vars.dir & 0xFFFF),
-            time: dayUtcToEpoch(vars.day, vars.utc),
+            latitude: lat,
+            longitude: lon,
+            altitude: alt,
+            speed: spd,
+            direction: dir,
+            time: dayUtcToEpoch(day, utc),
             source: 'satcom'
         };
 
@@ -100,7 +93,7 @@ var satcomPostHandler = function(req) {
 
         newPointCheckAndEmit(dataPoint, req);
     } catch (e) {
-        console.log('Error receiving from satcom: ' + e);
+	logger.error('Error receiving from satcom: ' + e);
     }
 };
 
@@ -110,7 +103,7 @@ var newPointCheckAndEmit = function(newpoint, req) {
         console.log('New Point: ' + JSON.stringify(newpoint));
         verifyNewPoint(newpoint, function(res) {
             if (!res) {
-                console.log('Rejected Duplicate Point.');
+		logger.debug('Rejected duplicate point.');
             } else {
                 if (!isWhiteListed(newpoint.edgeId.toLowerCase())) {
                     return;

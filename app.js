@@ -77,6 +77,6 @@ live.setup(app, io);
 api.setWhitelist(config.whitelist);
 predict.setup(app, io);
 
-server.listen(port, function() {
+server.listen(port, '127.0.0.1', function() {
     console.log("Server listening on *:" + port);
 });
